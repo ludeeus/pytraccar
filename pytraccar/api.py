@@ -14,6 +14,10 @@ class API(object):
         self._loop = loop
         self._session = session
 
+    async def dummy(self):
+        """Get the local installed version."""
+        print("For now this is just a placeholder")
+
     @property
     def test(self):
         """Return sample text."""
