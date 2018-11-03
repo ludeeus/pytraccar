@@ -17,11 +17,13 @@ _LOGGER = logging.getLogger(__name__)
 class API(object):
     """A class for the Traccar API."""
 
-    def __init__(self, loop, session, username, password, api_endpoint):
+    def __init__(self, loop, session, username, password,
+                 host, port=8082, ssl=False):
         """Initialize the class."""
         self._loop = loop
         self._auth = aiohttp.BasicAuth(username, password)
-        self._api = api_endpoint
+        schema = 'https' if ssl else 'http'
+        self._api = schema + '://' + host + ':' + str(port) + '/api'
         self._session = session
         self._authenticated = False
         self._geofences = {}
