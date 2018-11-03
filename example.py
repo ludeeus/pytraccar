@@ -10,11 +10,9 @@ async def test():
     """Example usage of pytraccar."""
     async with aiohttp.ClientSession() as session:
         data = API(LOOP, session, 'admin', 'admin', URL)
-        await data.get_geofences()
-        await data.get_devices()
+        await data.get_device_info()
 
-        print("Geofences:", data.geofences)
-        print("Devices:", data.devices)
+        print("Device info:", data.device_info)
 
 
 LOOP = asyncio.get_event_loop()
