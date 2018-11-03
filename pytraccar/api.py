@@ -5,6 +5,7 @@ This code is released under the terms of the MIT license. See the LICENSE
 file for more details.
 """
 
+
 class API(object):
     """A class for the Traccar API."""
 
