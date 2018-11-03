@@ -5,6 +5,7 @@ from traccar import API
 
 URL = 'http://192.168.2.11:8082/api'
 
+
 async def test():
     """Example usage of pytraccar."""
     async with aiohttp.ClientSession() as session:
