@@ -48,7 +48,10 @@ class API(object):
                         devinfo[unique_id]['longitude'] = pos['longitude']
                         devinfo[unique_id]['altitude'] = pos['altitude']
                         devinfo[unique_id]['speed'] = pos['speed']
-                        geofence = self.geofences[dev['geofenceIds'][0]]
+                        if self.geofences[dev['geofenceIds'][0]]:
+                            geofence = self.geofences[dev['geofenceIds'][0]]
+                        else:
+                            geofence = None
                         devinfo[unique_id]['geofence'] = geofence
             self._device_info = devinfo
         except KeyError as error:
