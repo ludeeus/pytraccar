@@ -12,6 +12,7 @@ import aiohttp
 import async_timeout
 
 _LOGGER = logging.getLogger(__name__)
+HEADERS = {'Content-Type': 'application/json'}
 
 
 class API(object):
@@ -36,7 +37,9 @@ class API(object):
         base_url = self._api + '/users'
         try:
             async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(base_url, auth=self._auth)
+                response = await self._session.get(base_url,
+                                                   auth=self._auth,
+                                                   headers=HEADERS)
             if response.status == 200:
                 self._authenticated = True
         except (asyncio.TimeoutError,
@@ -78,7 +81,9 @@ class API(object):
         base_url = self._api + '/geofences'
         try:
             async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(base_url, auth=self._auth)
+                response = await self._session.get(base_url,
+                                                   auth=self._auth,
+                                                   headers=HEADERS)
             data = await response.json()
             for geofence in data or []:
                 self._geofences[geofence['id']] = geofence['name']
@@ -91,7 +96,9 @@ class API(object):
         base_url = self._api + '/devices'
         try:
             async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(base_url, auth=self._auth)
+                response = await self._session.get(base_url,
+                                                   auth=self._auth,
+                                                   headers=HEADERS)
             data = await response.json()
             self._devices = data
         except (asyncio.TimeoutError,
@@ -103,7 +110,9 @@ class API(object):
         base_url = self._api + '/positions'
         try:
             async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(base_url, auth=self._auth)
+                response = await self._session.get(base_url,
+                                                   auth=self._auth,
+                                                   headers=HEADERS)
             data = await response.json()
             self._positions = data
         except (asyncio.TimeoutError,
