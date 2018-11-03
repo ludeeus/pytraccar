@@ -38,16 +38,18 @@ class API(object):
             for dev in self._devices or []:
                 for pos in self._positions or []:
                     if pos['deviceId'] == dev['id']:
-                        devinfo[dev['id']] = {}
-                        devinfo[dev['id']]['name'] = dev['name']
-                        devinfo[dev['id']]['address'] = pos['address']
-                        devinfo[dev['id']]['updated'] = pos['fixTime']
-                        devinfo[dev['id']]['latitude'] = pos['latitude']
-                        devinfo[dev['id']]['longitude'] = pos['longitude']
-                        devinfo[dev['id']]['altitude'] = pos['altitude']
-                        devinfo[dev['id']]['speed'] = pos['speed']
-                        geofence =  self.geofences[dev['geofenceIds'][0]]
-                        devinfo[dev['id']]['geofence'] = geofence
+                        unique_id = dev['uniqueId']
+                        devinfo[unique_id] = {}
+                        devinfo[unique_id]['device_id'] = dev['id']
+                        devinfo[unique_id]['device_id'] = dev['name']
+                        devinfo[unique_id]['address'] = pos['address']
+                        devinfo[unique_id]['updated'] = dev['lastUpdate']
+                        devinfo[unique_id]['latitude'] = pos['latitude']
+                        devinfo[unique_id]['longitude'] = pos['longitude']
+                        devinfo[unique_id]['altitude'] = pos['altitude']
+                        devinfo[unique_id]['speed'] = pos['speed']
+                        geofence = self.geofences[dev['geofenceIds'][0]]
+                        devinfo[unique_id]['geofence'] = geofence
             self._device_info = devinfo
         except KeyError as error:
             _LOGGER.error('Error combining data from Traccar, %s', error)
