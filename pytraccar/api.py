@@ -23,10 +23,23 @@ class API(object):
         self._auth = aiohttp.BasicAuth(username, password)
         self._api = api_endpoint
         self._session = session
+        self._authenticated = False
         self._geofences = {}
         self._devices = []
         self._positions = []
         self._device_info = {}
+
+    async def test_connection(self):
+        """Get the local installed version."""
+        base_url = self._api + '/users'
+        try:
+            async with async_timeout.timeout(5, loop=self._loop):
+                response = await self._session.get(base_url, auth=self._auth)
+            if response.status == 200:
+                self._authenticated = True
+        except (asyncio.TimeoutError,
+                aiohttp.ClientError, socket.gaierror) as error:
+            _LOGGER.error('Error connecting to Traccar, %s', error)
 
     async def get_device_info(self):
         """Get the local installed version."""
@@ -44,6 +57,7 @@ class API(object):
                         devinfo[unique_id]['device_id'] = dev['name']
                         devinfo[unique_id]['address'] = pos['address']
                         devinfo[unique_id]['updated'] = dev['lastUpdate']
+                        devinfo[unique_id]['category'] = dev['category']
                         devinfo[unique_id]['latitude'] = pos['latitude']
                         devinfo[unique_id]['longitude'] = pos['longitude']
                         devinfo[unique_id]['altitude'] = pos['altitude']
@@ -113,3 +127,8 @@ class API(object):
     def device_info(self):
         """Return the device info if any."""
         return self._device_info
+
+    @property
+    def authenticated(self):
+        """Return bool that indicate the success of the authentication."""
+        return self._authenticated
