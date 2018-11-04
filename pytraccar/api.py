@@ -12,7 +12,7 @@ import aiohttp
 import async_timeout
 
 _LOGGER = logging.getLogger(__name__)
-HEADERS = {'Content-Type': 'application/json'}
+HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 
 
 class API(object):
