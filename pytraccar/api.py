@@ -67,9 +67,9 @@ class API(object):
                         devinfo[unique_id]['longitude'] = pos['longitude']
                         devinfo[unique_id]['altitude'] = pos['altitude']
                         devinfo[unique_id]['speed'] = pos['speed']
-                        if self.geofences[dev['geofenceIds'][0]]:
+                        try:
                             geofence = self.geofences[dev['geofenceIds'][0]]
-                        else:
+                        except IndexError:
                             geofence = None
                         devinfo[unique_id]['geofence'] = geofence
             self._device_info = devinfo
