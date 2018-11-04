@@ -34,7 +34,7 @@ class API(object):
 
     async def test_connection(self):
         """Get the local installed version."""
-        base_url = self._api + '/users'
+        base_url = self._api + '/devices'
         try:
             async with async_timeout.timeout(5, loop=self._loop):
                 response = await self._session.get(base_url,
