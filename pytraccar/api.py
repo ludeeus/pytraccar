@@ -55,18 +55,23 @@ class API(object):
         try:
             for dev in self._devices or []:
                 for pos in self._positions or []:
-                    if pos['deviceId'] == dev['id']:
-                        unique_id = dev['uniqueId']
+                    if pos['deviceId'] == dev.get('id'):
+                        unique_id = dev.get('uniqueId')
                         devinfo[unique_id] = {}
-                        devinfo[unique_id]['device_id'] = dev['id']
-                        devinfo[unique_id]['device_id'] = dev['name']
-                        devinfo[unique_id]['address'] = pos['address']
-                        devinfo[unique_id]['updated'] = dev['lastUpdate']
-                        devinfo[unique_id]['category'] = dev['category']
-                        devinfo[unique_id]['latitude'] = pos['latitude']
-                        devinfo[unique_id]['longitude'] = pos['longitude']
-                        devinfo[unique_id]['altitude'] = pos['altitude']
-                        devinfo[unique_id]['speed'] = pos['speed']
+                        devinfo[unique_id]['device_id'] = dev.get('id')
+                        devinfo[unique_id]['device_id'] = dev.get('name')
+                        devinfo[unique_id]['address'] = pos.get('address')
+                        devinfo[unique_id]['updated'] = dev.get('lastUpdate')
+                        devinfo[unique_id]['category'] = dev.get('category')
+                        devinfo[unique_id]['latitude'] = pos.get('latitude')
+                        devinfo[unique_id]['longitude'] = pos.get('longitude')
+                        devinfo[unique_id]['altitude'] = pos.get('altitude')
+                        devinfo[unique_id]['speed'] = pos.get.get('speed')
+                        devattr = pos.get('attributes', {})
+                        battery_level = devattr.get('batteryLevel')
+                        motion = devattr.get('motion')
+                        devinfo[unique_id]['battery'] = battery_level
+                        devinfo[unique_id]['motion'] = motion
                         try:
                             geofence = self.geofences[dev['geofenceIds'][0]]
                         except IndexError:
