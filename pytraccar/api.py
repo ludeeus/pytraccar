@@ -78,6 +78,7 @@ class API(object):
                             geofence = None
                         devinfo[unique_id]['geofence'] = geofence
             self._device_info = devinfo
+            _LOGGER.debug(self._device_info)
         except KeyError as error:
             _LOGGER.error('Error combining data from Traccar, %s', error)
 
@@ -92,6 +93,7 @@ class API(object):
             data = await response.json()
             for geofence in data or []:
                 self._geofences[geofence['id']] = geofence['name']
+            _LOGGER.debug(self._geofences)
         except (asyncio.TimeoutError,
                 aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
@@ -106,6 +108,7 @@ class API(object):
                                                    headers=HEADERS)
             data = await response.json()
             self._devices = data
+            _LOGGER.debug(self._devices)
         except (asyncio.TimeoutError,
                 aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
@@ -120,6 +123,7 @@ class API(object):
                                                    headers=HEADERS)
             data = await response.json()
             self._positions = data
+            _LOGGER.debug(self._positions)
         except (asyncio.TimeoutError,
                 aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
