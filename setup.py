@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     LONG = fh.read()
 setuptools.setup(
     name="pytraccar",
-    version="0.2.0",
+    version="0.2.1",
     author="Joakim Sorensen",
     author_email="ludeeus@gmail.com",
     description="",
