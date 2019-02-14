@@ -46,7 +46,7 @@ class API(object):
                 aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error connecting to Traccar, %s', error)
 
-    async def get_device_info(self):
+    async def get_device_info(self, custom_attributes=None):
         """Get the local installed version."""
         await self.get_geofences()
         await self.get_devices()
@@ -72,6 +72,11 @@ class API(object):
                         motion = devattr.get('motion')
                         devinfo[unique_id]['battery'] = battery_level
                         devinfo[unique_id]['motion'] = motion
+                        if custom_attributes is not None:
+                            for attr in custom_attributes:
+                                if attr in devattr:
+                                    attrvalue = devattr.get(attr)
+                                    devinfo[unique_id][attr] = attrvalue
                         try:
                             geofence = self.geofences[dev['geofenceIds'][0]]
                         except IndexError:
