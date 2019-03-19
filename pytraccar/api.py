@@ -66,6 +66,7 @@ class API(object):
                         devinfo[unique_id]['latitude'] = pos.get('latitude')
                         devinfo[unique_id]['longitude'] = pos.get('longitude')
                         devinfo[unique_id]['altitude'] = pos.get('altitude')
+                        devinfo[unique_id]['course'] = pos.get('course')
                         devinfo[unique_id]['speed'] = pos.get('speed')
                         devattr = pos.get('attributes', {})
                         battery_level = devattr.get('batteryLevel')
