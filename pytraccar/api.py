@@ -11,6 +11,9 @@ import socket
 import aiohttp
 import async_timeout
 
+from datetime import timedelta
+from datetime import datetime
+
 _LOGGER = logging.getLogger(__name__)
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 
@@ -58,7 +61,7 @@ class API(object):
                     if pos['deviceId'] == dev.get('id'):
                         unique_id = dev.get('uniqueId')
                         devinfo[unique_id] = {}
-                        devinfo[unique_id]['device_id'] = dev.get('id')
+                        devinfo[unique_id]['traccar_id'] = dev.get('id')
                         devinfo[unique_id]['device_id'] = dev.get('name')
                         devinfo[unique_id]['address'] = pos.get('address')
                         devinfo[unique_id]['updated'] = dev.get('lastUpdate')
@@ -132,6 +135,35 @@ class API(object):
             _LOGGER.debug(self._positions)
         except (asyncio.TimeoutError,
                 aiohttp.ClientError, socket.gaierror) as error:
+            _LOGGER.error('Error fetching data from Traccar, %s', error)
+
+    async def get_events(self, deviceIds=[], groupIds=[],
+                         fromTime=None, toTime=None, eventTypes=['allEvents']):
+        if not deviceIds and not groupIds:
+            _LOGGER.error('At least one deviceId or one groupId must be passed')
+            return
+        if toTime is None:
+            toTime = datetime.utcnow()
+        if fromTime is None:
+            """Default interval 30sec"""
+            fromTime=toTime - timedelta(seconds=30)
+        """Get the local installed version."""
+        base_url = self._api + '/reports/events'     
+        get_params = []
+        get_params.extend([('deviceId', value) for value in deviceIds])
+        get_params.extend([('groupId', value) for value in groupIds])
+        get_params.extend([('type', value) for value in eventTypes])
+        get_params.extend([('from', fromTime.isoformat() + 'Z')])
+        get_params.extend([('to', toTime.isoformat() + 'Z')])
+        try:
+            async with async_timeout.timeout(5, loop=self._loop):
+                response = await self._session.get(base_url,
+                                                   auth=self._auth,
+                                                   headers=HEADERS,
+                                                   params=get_params)
+            data = await response.json()
+            return data
+        except (Exception) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
 
     @property
