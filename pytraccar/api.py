@@ -8,11 +8,11 @@ import asyncio
 import logging
 import socket
 
-import aiohttp
-import async_timeout
-
 from datetime import timedelta
 from datetime import datetime
+
+import aiohttp
+import async_timeout
 
 _LOGGER = logging.getLogger(__name__)
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
@@ -138,13 +138,16 @@ class API(object):
             _LOGGER.error('Error fetching data from Traccar, %s', error)
 
     async def get_events(self, device_ids, group_ids=None,
-                         from_time=None, to_time=None, event_types=['allEvents']):
+                         from_time=None, to_time=None,
+                         event_types=None):
         """Get the local installed version."""
         default_interval = 30
         if to_time is None:
             to_time = datetime.utcnow()
         if from_time is None:
             from_time = to_time - timedelta(seconds=default_interval)
+        if event_types is None:
+            event_types = ['allEvents']
         base_url = self._api + '/reports/events'
         get_params = []
         get_params.extend([('deviceId', value) for value in device_ids])
