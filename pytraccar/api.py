@@ -139,16 +139,13 @@ class API(object):
 
     async def get_events(self, deviceIds=[], groupIds=[],
                          fromTime=None, toTime=None, eventTypes=['allEvents']):
-        if not deviceIds and not groupIds:
-            _LOGGER.error('At least one deviceId or one groupId must be passed')
-            return
+        """Get the local installed version."""
         if toTime is None:
             toTime = datetime.utcnow()
         if fromTime is None:
             """Default interval 30sec"""
-            fromTime=toTime - timedelta(seconds=30)
-        """Get the local installed version."""
-        base_url = self._api + '/reports/events'     
+            fromTime = toTime - timedelta(seconds=30)
+        base_url = self._api + '/reports/events'
         get_params = []
         get_params.extend([('deviceId', value) for value in deviceIds])
         get_params.extend([('groupId', value) for value in groupIds])
