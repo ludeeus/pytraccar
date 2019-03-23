@@ -137,21 +137,22 @@ class API(object):
                 aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
 
-    async def get_events(self, deviceIds=[], groupIds=[],
-                         fromTime=None, toTime=None, eventTypes=['allEvents']):
+    async def get_events(self, device_ids, group_ids=None,
+                         from_time=None, to_time=None, event_types=['allEvents']):
         """Get the local installed version."""
-        if toTime is None:
-            toTime = datetime.utcnow()
-        if fromTime is None:
-            """Default interval 30sec"""
-            fromTime = toTime - timedelta(seconds=30)
+        default_interval = 30
+        if to_time is None:
+            to_time = datetime.utcnow()
+        if from_time is None:
+            from_time = to_time - timedelta(seconds=default_interval)
         base_url = self._api + '/reports/events'
         get_params = []
-        get_params.extend([('deviceId', value) for value in deviceIds])
-        get_params.extend([('groupId', value) for value in groupIds])
-        get_params.extend([('type', value) for value in eventTypes])
-        get_params.extend([('from', fromTime.isoformat() + 'Z')])
-        get_params.extend([('to', toTime.isoformat() + 'Z')])
+        get_params.extend([('deviceId', value) for value in device_ids])
+        if group_ids is not None:
+            get_params.extend([('groupId', value) for value in group_ids])
+        get_params.extend([('from', from_time.isoformat() + 'Z')])
+        get_params.extend([('to', to_time.isoformat() + 'Z')])
+        get_params.extend([('type', value) for value in event_types])
         try:
             async with async_timeout.timeout(5, loop=self._loop):
                 response = await self._session.get(base_url,
@@ -160,7 +161,8 @@ class API(object):
                                                    params=get_params)
             data = await response.json()
             return data
-        except (Exception) as error:
+        except (asyncio.TimeoutError,
+                aiohttp.ClientError, socket.gaierror) as error:
             _LOGGER.error('Error fetching data from Traccar, %s', error)
 
     @property
