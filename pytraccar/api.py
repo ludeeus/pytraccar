@@ -8,8 +8,7 @@ import asyncio
 import logging
 import socket
 
-from datetime import timedelta
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import aiohttp
 import async_timeout
