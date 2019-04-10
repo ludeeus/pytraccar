@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     LONG = fh.read()
 setuptools.setup(
     name="pytraccar",
-    version="0.5.0",
+    version="0.6.0",
     author="Joakim Sorensen",
     author_email="ludeeus@gmail.com",
     description="",
@@ -19,4 +19,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
+    entry_points = {
+        'console_scripts': ['traccar=traccar.cli:cli'],
+    }
 )
