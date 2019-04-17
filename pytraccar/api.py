@@ -67,6 +67,7 @@ class API(object):
                         devinfo[unique_id]['category'] = dev.get('category')
                         devinfo[unique_id]['latitude'] = pos.get('latitude')
                         devinfo[unique_id]['longitude'] = pos.get('longitude')
+                        devinfo[unique_id]['accuracy'] = pos.get('accuracy')
                         devinfo[unique_id]['altitude'] = pos.get('altitude')
                         devinfo[unique_id]['course'] = pos.get('course')
                         devinfo[unique_id]['speed'] = pos.get('speed')
