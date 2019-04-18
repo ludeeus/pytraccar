@@ -1,4 +1,4 @@
-# pytraccar [![Build Status](https://travis-ci.com/ludeeus/pytraccar.svg?branch=master)](https://travis-ci.com/ludeeus/pytraccar)
+# pytraccar 
 
 _Update and fetch device information from Traccar._
 
