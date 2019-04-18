@@ -12,7 +12,7 @@ async def test():
         password = input("Password: ")
         print("\n\n\n")
         data = API(LOOP, session, username, password, host)
-        await data .test_connection()
+        await data.test_connection()
         print("Authenticated:", data.authenticated)
         if data.authenticated:
             await data.get_device_info()

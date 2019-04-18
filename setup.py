@@ -10,7 +10,7 @@ setuptools.setup(
     author_email="ludeeus@gmail.com",
     description="",
     long_description=LONG,
-    install_requires=['aiohttp', 'async_timeout'],
+    install_requires=["aiohttp", "async_timeout"],
     long_description_content_type="text/markdown",
     url="https://github.com/ludeeus/pytraccar",
     packages=setuptools.find_packages(),
@@ -19,7 +19,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
-    entry_points = {
-        'console_scripts': ['traccar=traccar.cli:cli'],
-    }
+    entry_points={"console_scripts": ["traccar=traccar.cli:cli"]},
 )
