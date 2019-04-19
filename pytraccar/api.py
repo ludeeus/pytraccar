@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 import aiohttp
 import async_timeout
 
-from pytraccar.const import ATTRIBUTES, HEADERS
+from pytraccar.const import ATTRIBUTES, EVENT_INTERVAL, HEADERS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -152,21 +152,22 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         self, device_ids, group_ids=None, from_time=None, to_time=None, event_types=None
     ):
         """Get the local installed version."""
-        default_interval = 30
         if to_time is None:
             to_time = datetime.utcnow()
         if from_time is None:
-            from_time = to_time - timedelta(seconds=default_interval)
+            from_time = to_time - timedelta(seconds=EVENT_INTERVAL)
         if event_types is None:
             event_types = ["allEvents"]
 
         get_params = []
+
         get_params.extend([("deviceId", value) for value in device_ids])
         if group_ids is not None:
             get_params.extend([("groupId", value) for value in group_ids])
         get_params.extend([("from", from_time.isoformat() + "Z")])
         get_params.extend([("to", to_time.isoformat() + "Z")])
         get_params.extend([("type", value) for value in event_types])
+
         data = await self.api("reports/events", get_params)
 
         if self.connected and self.authenticated:

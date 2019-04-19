@@ -1,6 +1,8 @@
 """Const for pytraccar."""
 HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
+EVENT_INTERVAL = 30
+
 ATTRIBUTES = {
     "position": {
         "address": "address",
