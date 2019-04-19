@@ -19,5 +19,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ),
-    entry_points={"console_scripts": ["traccar=traccar.cli:cli"]},
+    entry_points={"console_scripts": ["traccar=pytraccar.cli:cli"]},
 )
