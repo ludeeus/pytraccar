@@ -4,3 +4,5 @@ pyvenv.cfg
 Include*
 *egg-info*
 *.pyc
+*__pycache__*
+.eggs*
