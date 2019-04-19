@@ -13,11 +13,12 @@ from datetime import datetime, timedelta
 import aiohttp
 import async_timeout
 
+from pytraccar.const import ATTRIBUTES, HEADERS
+
 _LOGGER = logging.getLogger(__name__)
-HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
 
-class API(object):
+class API(object):  # pylint: disable=too-many-instance-attributes
     """A class for the Traccar API."""
 
     def __init__(self, loop, session, username, password, host, port=8082, ssl=False):
@@ -28,23 +29,52 @@ class API(object):
         self._api = schema + "://" + host + ":" + str(port) + "/api"
         self._session = session
         self._authenticated = False
+        self._connected = False
         self._geofences = {}
         self._devices = []
+        self._events = []
         self._positions = []
         self._device_info = {}
 
-    async def test_connection(self):
-        """Get the local installed version."""
-        base_url = self._api + "/devices"
+    async def api(self, endpoint, params=None):
+        """Comunicate with the API."""
+        data = {}
+        url = "{}/{}".format(self._api, endpoint)
         try:
-            async with async_timeout.timeout(5, loop=self._loop):
+            async with async_timeout.timeout(8, loop=self._loop):
                 response = await self._session.get(
-                    base_url, auth=self._auth, headers=HEADERS
+                    url, auth=self._auth, headers=HEADERS, params=params
                 )
+
             if response.status == 200:
                 self._authenticated = True
-        except (asyncio.TimeoutError, aiohttp.ClientError, socket.gaierror) as error:
-            _LOGGER.error("Error connecting to Traccar, %s", error)
+                self._connected = True
+                data = await response.json()
+            elif response.status == 401:
+                self._authenticated = False
+                self._connected = True
+
+        except asyncio.TimeoutError as error:
+            self._authenticated, self._connected = False, False
+            _LOGGER.warning("Timeouterror connecting to Traccar, %s", error)
+        except aiohttp.ClientError as error:
+            self._authenticated, self._connected = False, False
+            _LOGGER.warning("Error connecting to Traccar, %s", error)
+        except socket.gaierror as error:
+            self._authenticated, self._connected = False, False
+            _LOGGER.warning("Error connecting to Traccar, %s", error)
+        except TypeError as error:
+            self._authenticated, self._connected = False, False
+            _LOGGER.warning("Error connecting to Traccar, %s", error)
+        except Exception as error:  # pylint: disable=broad-except
+            self._authenticated, self._connected = False, False
+            _LOGGER.warning("Error connecting to Traccar, %s", error)
+
+        return data
+
+    async def test_connection(self):
+        """Get the local installed version."""
+        await self.api("devices")
 
     async def get_device_info(self, custom_attributes=None):
         """Get the local installed version."""
@@ -52,85 +82,71 @@ class API(object):
         await self.get_devices()
         await self.get_positions()
         devinfo = {}
-        try:
+        try:  # pylint: disable=too-many-nested-blocks
             for dev in self._devices or []:
                 for pos in self._positions or []:
                     if pos["deviceId"] == dev.get("id"):
-                        unique_id = dev.get("uniqueId")
-                        devinfo[unique_id] = {}
-                        devinfo[unique_id]["traccar_id"] = dev.get("id")
-                        devinfo[unique_id]["device_id"] = dev.get("name")
-                        devinfo[unique_id]["address"] = pos.get("address")
-                        devinfo[unique_id]["updated"] = dev.get("lastUpdate")
-                        devinfo[unique_id]["category"] = dev.get("category")
-                        devinfo[unique_id]["latitude"] = pos.get("latitude")
-                        devinfo[unique_id]["longitude"] = pos.get("longitude")
-                        devinfo[unique_id]["accuracy"] = pos.get("accuracy")
-                        devinfo[unique_id]["altitude"] = pos.get("altitude")
-                        devinfo[unique_id]["course"] = pos.get("course")
-                        devinfo[unique_id]["speed"] = pos.get("speed")
-                        devattr = pos.get("attributes", {})
-                        battery_level = devattr.get("batteryLevel")
-                        motion = devattr.get("motion")
-                        devinfo[unique_id]["battery"] = battery_level
-                        devinfo[unique_id]["motion"] = motion
+                        uid = dev.get("uniqueId")
+                        devinfo[uid] = {}
+                        nested = pos.get("attributes", {})
+
+                        for attribute in ATTRIBUTES["position"]:
+                            key = ATTRIBUTES["position"][attribute]
+                            devinfo[uid][attribute] = key
+
+                        for attribute in ATTRIBUTES["device"]:
+                            key = ATTRIBUTES["device"][attribute]
+                            devinfo[uid][attribute] = key
+
+                        devinfo[uid]["battery"] = nested.get("batteryLevel")
+                        devinfo[uid]["motion"] = nested.get("motion")
+
                         if custom_attributes is not None:
                             for attr in custom_attributes:
-                                if attr in devattr:
-                                    attrvalue = devattr.get(attr)
-                                    devinfo[unique_id][attr] = attrvalue
+                                if attr in nested:
+                                    attrvalue = nested.get(attr)
+                                    devinfo[uid][attr] = attrvalue
                         try:
                             geofence = self.geofences[dev["geofenceIds"][0]]
                         except IndexError:
                             geofence = None
-                        devinfo[unique_id]["geofence"] = geofence
-            self._device_info = devinfo
+
+                        devinfo[uid]["geofence"] = geofence
+            if devinfo:
+                self._device_info = devinfo
+            else:
+                self._device_info = self._device_info
             _LOGGER.debug(self._device_info)
         except KeyError as error:
             _LOGGER.error("Error combining data from Traccar, %s", error)
 
     async def get_geofences(self):
         """Get the local installed version."""
-        base_url = self._api + "/geofences"
-        try:
-            async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(
-                    base_url, auth=self._auth, headers=HEADERS
-                )
-            data = await response.json()
+        data = await self.api("geofences")
+        if self.connected and self.authenticated:
             for geofence in data or []:
                 self._geofences[geofence["id"]] = geofence["name"]
-            _LOGGER.debug(self._geofences)
-        except (asyncio.TimeoutError, aiohttp.ClientError, socket.gaierror) as error:
-            _LOGGER.error("Error fetching data from Traccar, %s", error)
+        else:
+            self._geofences = self._geofences
+        _LOGGER.debug(self._geofences)
 
     async def get_devices(self):
         """Get the local installed version."""
-        base_url = self._api + "/devices"
-        try:
-            async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(
-                    base_url, auth=self._auth, headers=HEADERS
-                )
-            data = await response.json()
+        data = await self.api("devices")
+        if self.connected and self.authenticated:
             self._devices = data
-            _LOGGER.debug(self._devices)
-        except (asyncio.TimeoutError, aiohttp.ClientError, socket.gaierror) as error:
-            _LOGGER.error("Error fetching data from Traccar, %s", error)
+        else:
+            self._devices = self._devices
+        _LOGGER.debug(self._devices)
 
     async def get_positions(self):
         """Get the local installed version."""
-        base_url = self._api + "/positions"
-        try:
-            async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(
-                    base_url, auth=self._auth, headers=HEADERS
-                )
-            data = await response.json()
+        data = await self.api("positions")
+        if self.connected and self.authenticated:
             self._positions = data
-            _LOGGER.debug(self._positions)
-        except (asyncio.TimeoutError, aiohttp.ClientError, socket.gaierror) as error:
-            _LOGGER.error("Error fetching data from Traccar, %s", error)
+        else:
+            self._positions = self._positions
+        _LOGGER.debug(self._positions)
 
     async def get_events(
         self, device_ids, group_ids=None, from_time=None, to_time=None, event_types=None
@@ -143,7 +159,7 @@ class API(object):
             from_time = to_time - timedelta(seconds=default_interval)
         if event_types is None:
             event_types = ["allEvents"]
-        base_url = self._api + "/reports/events"
+
         get_params = []
         get_params.extend([("deviceId", value) for value in device_ids])
         if group_ids is not None:
@@ -151,15 +167,19 @@ class API(object):
         get_params.extend([("from", from_time.isoformat() + "Z")])
         get_params.extend([("to", to_time.isoformat() + "Z")])
         get_params.extend([("type", value) for value in event_types])
-        try:
-            async with async_timeout.timeout(5, loop=self._loop):
-                response = await self._session.get(
-                    base_url, auth=self._auth, headers=HEADERS, params=get_params
-                )
-            data = await response.json()
-            return data
-        except (asyncio.TimeoutError, aiohttp.ClientError, socket.gaierror) as error:
-            _LOGGER.error("Error fetching data from Traccar, %s", error)
+        data = await self.api("reports/events", get_params)
+
+        if self.connected and self.authenticated:
+            self._events = data
+        else:
+            self._events = self._events
+
+        return self._events
+
+    @property
+    def events(self):
+        """Return events."""
+        return self._geofences
 
     @property
     def geofences(self):
@@ -185,3 +205,8 @@ class API(object):
     def authenticated(self):
         """Return bool that indicate the success of the authentication."""
         return self._authenticated
+
+    @property
+    def connected(self):
+        """Return bool that indicate the success of the connection."""
+        return self._connected
