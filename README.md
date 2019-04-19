@@ -1,11 +1,19 @@
 # pytraccar 
 
-_Update and fetch device information from Traccar._
+Documentation for this package can be found here:  
+[https://ludeeus.github.io/pytraccar/index.html](https://ludeeus.github.io/pytraccar/index.html)  
+![documentation](images/docs.png)
 
-## Install
+## Installation
 
 ```bash
-pip install pytraccar
+python3 -m install pytraccar
+```
+
+## CLI test
+
+```bash
+traccar
 ```
 
 Look at the file `example.py` for a usage example.
