@@ -6,3 +6,6 @@ Include*
 *.pyc
 *__pycache__*
 .eggs*
+bin*
+share*
+pip-selfcheck.json
