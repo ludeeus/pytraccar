@@ -5,6 +5,7 @@ from pytraccar.api import API
 
 LOOP = asyncio.get_event_loop()
 
+
 async def runcli():
     """Debug of pytraccar."""
     async with aiohttp.ClientSession() as session:
@@ -22,6 +23,7 @@ async def runcli():
             print("Devices:", data.devices)
             print("Positions:", data.positions)
             print("Device info:", data.device_info)
+
 
 def cli():
     """Cli."""

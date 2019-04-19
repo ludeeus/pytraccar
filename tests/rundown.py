@@ -4,9 +4,9 @@ import aiohttp
 import pytest
 from pytraccar.api import API
 
-HOST = '0.0.0.0'
-USERNAME = 'test'
-PASSWORD = 'test'
+HOST = "0.0.0.0"
+USERNAME = "test"
+PASSWORD = "test"
 
 LOOP = asyncio.get_event_loop()
 
@@ -59,7 +59,7 @@ async def test_get_events():
     """Test get_events."""
     async with aiohttp.ClientSession() as session:
         traccar = API(LOOP, session, USERNAME, PASSWORD, HOST)
-        deviceids = [123, 123, 123, 'test']
+        deviceids = [123, 123, 123, "test"]
         await traccar.get_events(deviceids)
         assert not traccar.authenticated
         assert not traccar.connected
