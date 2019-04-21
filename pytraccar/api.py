@@ -36,7 +36,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         self._positions = []
         self._device_info = {}
 
-    async def api(self, endpoint, params=None):
+    async def api(self, endpoint, params=None, test=False):
         """Comunicate with the API."""
         data = {}
         url = "{}/{}".format(self._api, endpoint)
@@ -56,25 +56,30 @@ class API(object):  # pylint: disable=too-many-instance-attributes
 
         except asyncio.TimeoutError as error:
             self._authenticated, self._connected = False, False
-            _LOGGER.warning("Timeouterror connecting to Traccar, %s", error)
+            if not test:
+                _LOGGER.warning("Timeouterror connecting to Traccar, %s", error)
         except aiohttp.ClientError as error:
             self._authenticated, self._connected = False, False
-            _LOGGER.warning("Error connecting to Traccar, %s", error)
+            if not test:
+                _LOGGER.warning("Error connecting to Traccar, %s", error)
         except socket.gaierror as error:
             self._authenticated, self._connected = False, False
-            _LOGGER.warning("Error connecting to Traccar, %s", error)
+            if not test:
+                _LOGGER.warning("Error connecting to Traccar, %s", error)
         except TypeError as error:
             self._authenticated, self._connected = False, False
-            _LOGGER.warning("Error connecting to Traccar, %s", error)
+            if not test:
+                _LOGGER.warning("Error connecting to Traccar, %s", error)
         except Exception as error:  # pylint: disable=broad-except
             self._authenticated, self._connected = False, False
-            _LOGGER.warning("Error connecting to Traccar, %s", error)
+            if not test:
+                _LOGGER.warning("Error connecting to Traccar, %s", error)
 
         return data
 
     async def test_connection(self):
         """Get the local installed version."""
-        await self.api("devices")
+        await self.api("devices", test=True)
 
     async def get_device_info(self, custom_attributes=None):
         """Get the local installed version."""
