@@ -97,11 +97,11 @@ class API(object):  # pylint: disable=too-many-instance-attributes
 
                         for attribute in ATTRIBUTES["position"]:
                             key = ATTRIBUTES["position"][attribute]
-                            devinfo[uid][attribute] = key
+                            devinfo[uid][attribute] = pos[key]
 
                         for attribute in ATTRIBUTES["device"]:
                             key = ATTRIBUTES["device"][attribute]
-                            devinfo[uid][attribute] = key
+                            devinfo[uid][attribute] = dev[key]
 
                         devinfo[uid]["battery"] = nested.get("batteryLevel")
                         devinfo[uid]["motion"] = nested.get("motion")
