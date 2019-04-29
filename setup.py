@@ -11,7 +11,7 @@ setuptools.setup(
     description="",
     long_description=LONG,
     install_requires=["pytest-runner", "aiohttp", "async_timeout"],
-    tests_require=["pytest", "aiohttp", "pytest-asyncio"],
+    tests_require=["pytest", "aiohttp", "pytest-asyncio", "aresponses"],
     long_description_content_type="text/markdown",
     url="https://github.com/ludeeus/pytraccar",
     packages=setuptools.find_packages(),

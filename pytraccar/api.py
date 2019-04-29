@@ -49,7 +49,8 @@ class API(object):  # pylint: disable=too-many-instance-attributes
             if response.status == 200:
                 self._authenticated = True
                 self._connected = True
-                data = await response.json()
+                if not test:
+                    data = await response.json()
             elif response.status == 401:
                 self._authenticated = False
                 self._connected = True
