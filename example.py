@@ -5,12 +5,14 @@ from pytraccar.api import API
 
 HOST = "192.168.2.105"
 PORT = 8072
+USERNAME = "admin"
+PASSWORD = "admin"
 
 
 async def test():
     """Example usage of pytraccar."""
     async with aiohttp.ClientSession() as session:
-        data = API(LOOP, session, "admin", "admin", HOST, PORT)
+        data = API(LOOP, session, USERNAME, PASSWORD, HOST, PORT)
         await data.get_device_info()
 
         print()

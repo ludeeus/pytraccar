@@ -38,7 +38,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
 
     async def api(self, endpoint, params=None, test=False):
         """Comunicate with the API."""
-        data = {}
+        data = None
         url = "{}/{}".format(self._api, endpoint)
         try:
             async with async_timeout.timeout(8, loop=self._loop):
@@ -75,7 +75,6 @@ class API(object):  # pylint: disable=too-many-instance-attributes
             self._authenticated, self._connected = False, False
             if not test:
                 _LOGGER.warning("Error connecting to Traccar, %s", error)
-
         return data
 
     async def test_connection(self):
@@ -186,7 +185,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
     @property
     def events(self):
         """Return events."""
-        return self._geofences
+        return self._events
 
     @property
     def geofences(self):

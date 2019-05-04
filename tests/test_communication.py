@@ -2,9 +2,9 @@
 import aiohttp
 import pytest
 from pytraccar.api import API
+from pytraccar.const import HEADERS
 
 from .const import TEST_USER, TEST_PASS, TEST_HOST, TEST_PORT
-
 
 
 @pytest.mark.asyncio
@@ -14,7 +14,7 @@ async def test_connection(aresponses, event_loop):
         "example.com:7728",
         "/api/devices",
         "get",
-        aresponses.Response(status=200),
+        aresponses.Response(status=200, headers=HEADERS),
     )
 
     async with aiohttp.ClientSession(loop=event_loop) as session:
@@ -30,7 +30,7 @@ async def test_connection_failed(aresponses, event_loop):
         "example.com:7728",
         "/api/devices",
         "get",
-        aresponses.Response(status=404),
+        aresponses.Response(status=404, headers=HEADERS),
     )
 
     async with aiohttp.ClientSession(loop=event_loop) as session:
@@ -46,7 +46,7 @@ async def test_authentication(aresponses, event_loop):
         "example.com:7728",
         "/api/devices",
         "get",
-        aresponses.Response(status=200),
+        aresponses.Response(status=200, headers=HEADERS),
     )
 
     async with aiohttp.ClientSession(loop=event_loop) as session:
@@ -62,7 +62,7 @@ async def test_authentication_failed(aresponses, event_loop):
         "example.com:7728",
         "/api/devices",
         "get",
-        aresponses.Response(status=401),
+        aresponses.Response(status=401, headers=HEADERS),
     )
 
     async with aiohttp.ClientSession(loop=event_loop) as session:
