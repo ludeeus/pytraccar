@@ -124,40 +124,45 @@ def geofence_response():
 @pytest.fixture()
 def event_response():
     """Response for events."""
-    return [{
-        'id': 1,
-        'attributes': {},
-        'deviceId': 1,
-        'type': 'deviceOnline',
-        'serverTime': "1970-01-01T00:00:00.000+0000",
-        'positionId': 0,
-        'geofenceId': 0,
-        'maintenanceId': 0
-    }, {
-        'id': 2,
-        'attributes': {},
-        'deviceId': 1,
-        'type': 'deviceMoving',
-        'serverTime': "1970-01-01T00:00:00.000+0000",
-        'positionId': 0,
-        'geofenceId': 0,
-        'maintenanceId': 0
-    }, {
-        'id': 3,
-        'attributes': {},
-        'deviceId': 2,
-        'type': 'deviceStopped',
-        'serverTime': "1970-01-01T00:00:00.000+0000",
-        'positionId': 0,
-        'geofenceId': 0,
-        'maintenanceId': 0
-    }, {
-        'id': 4,
-        'attributes': {},
-        'deviceId': 2,
-        'type': 'deviceUnknown',
-        'serverTime': "1970-01-01T00:00:00.000+0000",
-        'positionId': 0,
-        'geofenceId': 0,
-        'maintenanceId': 0
-    }]
+    return [
+        {
+            "id": 1,
+            "attributes": {},
+            "deviceId": 1,
+            "type": "deviceOnline",
+            "serverTime": "1970-01-01T00:00:00.000+0000",
+            "positionId": 0,
+            "geofenceId": 0,
+            "maintenanceId": 0,
+        },
+        {
+            "id": 2,
+            "attributes": {},
+            "deviceId": 1,
+            "type": "deviceMoving",
+            "serverTime": "1970-01-01T00:00:00.000+0000",
+            "positionId": 0,
+            "geofenceId": 0,
+            "maintenanceId": 0,
+        },
+        {
+            "id": 3,
+            "attributes": {},
+            "deviceId": 2,
+            "type": "deviceStopped",
+            "serverTime": "1970-01-01T00:00:00.000+0000",
+            "positionId": 0,
+            "geofenceId": 0,
+            "maintenanceId": 0,
+        },
+        {
+            "id": 4,
+            "attributes": {},
+            "deviceId": 2,
+            "type": "deviceUnknown",
+            "serverTime": "1970-01-01T00:00:00.000+0000",
+            "positionId": 0,
+            "geofenceId": 0,
+            "maintenanceId": 0,
+        },
+    ]
