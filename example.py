@@ -14,6 +14,7 @@ async def test():
     async with aiohttp.ClientSession() as session:
         data = API(LOOP, session, USERNAME, PASSWORD, HOST, PORT)
         await data.get_device_info()
+        await data.get_events([2])
 
         print()
         print("device_info:", data.device_info)

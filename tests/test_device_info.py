@@ -47,20 +47,18 @@ async def test_device_info(
         assert isinstance(traccar.device_info, dict)
         assert len(traccar.device_info) == 2
 
-        testdeviceid = "111111111"
-        testdevice = traccar.device_info[testdeviceid]
-
-        assert isinstance(testdevice["address"], str)
-        assert isinstance(testdevice["latitude"], float)
-        assert isinstance(testdevice["longitude"], float)
-        assert isinstance(testdevice["accuracy"], float)
-        assert isinstance(testdevice["altitude"], float)
-        assert isinstance(testdevice["course"], float)
-        assert isinstance(testdevice["speed"], float)
-        assert isinstance(testdevice["traccar_id"], int)
-        assert isinstance(testdevice["device_id"], str)
-        assert isinstance(testdevice["updated"], str)
-        assert isinstance(testdevice["category"], str)
-        assert isinstance(testdevice["battery"], float)
-        assert isinstance(testdevice["motion"], bool)
-        assert isinstance(testdevice["geofence"], str)
+        for device in traccar.device_info:
+            assert isinstance(traccar.device_info[device]["address"], str)
+            assert isinstance(traccar.device_info[device]["latitude"], float)
+            assert isinstance(traccar.device_info[device]["longitude"], float)
+            assert isinstance(traccar.device_info[device]["accuracy"], float)
+            assert isinstance(traccar.device_info[device]["altitude"], float)
+            assert isinstance(traccar.device_info[device]["course"], float)
+            assert isinstance(traccar.device_info[device]["speed"], float)
+            assert isinstance(traccar.device_info[device]["traccar_id"], int)
+            assert isinstance(traccar.device_info[device]["device_id"], str)
+            assert isinstance(traccar.device_info[device]["updated"], str)
+            assert isinstance(traccar.device_info[device]["category"], str)
+            assert isinstance(traccar.device_info[device]["battery"], float)
+            assert isinstance(traccar.device_info[device]["motion"], bool)
+            assert isinstance(traccar.device_info[device]["geofence"], str)

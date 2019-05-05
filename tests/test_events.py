@@ -27,3 +27,13 @@ async def test_events(aresponses, event_loop, event_response):
         traccar = API(event_loop, session, TEST_USER, TEST_PASS, TEST_HOST, TEST_PORT)
         await traccar.get_events([1, 2])
         assert isinstance(traccar.events, list)
+
+        for event in traccar.events:
+            assert isinstance(event["id"], int)
+            assert isinstance(event["attributes"], dict)
+            assert isinstance(event["deviceId"], int)
+            assert isinstance(event["type"], str)
+            assert isinstance(event["serverTime"], str)
+            assert isinstance(event["positionId"], int)
+            assert isinstance(event["geofenceId"], int)
+            assert isinstance(event["maintenanceId"], int)

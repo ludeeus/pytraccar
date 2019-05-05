@@ -78,11 +78,11 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         return data
 
     async def test_connection(self):
-        """Get the local installed version."""
+        """Test the connection."""
         await self.api("devices", test=True)
 
     async def get_device_info(self, custom_attributes=None):
-        """Get the local installed version."""
+        """Get device info"""
         await self.get_geofences()
         await self.get_devices()
         await self.get_positions()
@@ -126,7 +126,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
             _LOGGER.error("Error combining data from Traccar, %s", error)
 
     async def get_geofences(self):
-        """Get the local installed version."""
+        """Get geofences."""
         data = await self.api("geofences")
         if self.connected and self.authenticated:
             for geofence in data or []:
@@ -136,7 +136,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         _LOGGER.debug(self._geofences)
 
     async def get_devices(self):
-        """Get the local installed version."""
+        """Get devices."""
         data = await self.api("devices")
         if self.connected and self.authenticated:
             self._devices = data
@@ -145,7 +145,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         _LOGGER.debug(self._devices)
 
     async def get_positions(self):
-        """Get the local installed version."""
+        """Get positions."""
         data = await self.api("positions")
         if self.connected and self.authenticated:
             self._positions = data
@@ -156,7 +156,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
     async def get_events(
         self, device_ids, group_ids=None, from_time=None, to_time=None, event_types=None
     ):
-        """Get the local installed version."""
+        """Get events."""
         if to_time is None:
             to_time = datetime.utcnow()
         if from_time is None:
