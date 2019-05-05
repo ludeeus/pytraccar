@@ -27,3 +27,4 @@ async def test_devices(aresponses, event_loop, devices_response):
         traccar = API(event_loop, session, TEST_USER, TEST_PASS, TEST_HOST, TEST_PORT)
         await traccar.get_devices()
         assert isinstance(traccar.devices, list)
+        assert len(traccar.devices) == 2
