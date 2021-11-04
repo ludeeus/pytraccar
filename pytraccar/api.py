@@ -41,7 +41,7 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         data = None
         url = "{}/{}".format(self._api, endpoint)
         try:
-            async with async_timeout.timeout(8, loop=self._loop):
+            async with async_timeout.timeout(8):
                 response = await self._session.get(
                     url, auth=self._auth, headers=HEADERS, params=params
                 )
