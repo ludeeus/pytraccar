@@ -11,7 +11,6 @@ import socket
 from datetime import datetime, timedelta
 
 import aiohttp
-import async_timeout
 
 from pytraccar.const import ATTRIBUTES, EVENT_INTERVAL, HEADERS
 
@@ -41,10 +40,13 @@ class API(object):  # pylint: disable=too-many-instance-attributes
         data = None
         url = "{}/{}".format(self._api, endpoint)
         try:
-            async with async_timeout.timeout(8):
-                response = await self._session.get(
-                    url, auth=self._auth, headers=HEADERS, params=params
-                )
+            response = await self._session.get(
+                url,
+                auth=self._auth,
+                headers=HEADERS,
+                params=params,
+                timeout=aiohttp.ClientTimeout(total=10),
+            )
 
             if response.status == 200:
                 self._authenticated = True

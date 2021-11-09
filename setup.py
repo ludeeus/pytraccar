@@ -3,15 +3,15 @@ import setuptools
 
 with open("README.md", "r") as fh:
     LONG = fh.read()
+
 setuptools.setup(
     name="pytraccar",
-    version="0.9.0",
+    version="master",
     author="Joakim Sorensen",
     author_email="ludeeus@gmail.com",
     description="",
     long_description=LONG,
-    install_requires=["pytest-runner", "aiohttp", "async_timeout"],
-    tests_require=["pytest", "aiohttp", "pytest-asyncio", "aresponses"],
+    install_requires=["aiohttp"],
     long_description_content_type="text/markdown",
     url="https://github.com/ludeeus/pytraccar",
     packages=setuptools.find_packages(exclude=["tests.*", "tests"]),

@@ -1,0 +1,6 @@
+aiohttp
+black
+pytest-runner
+pytest
+pytest-asyncio
+aresponses

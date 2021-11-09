@@ -3,7 +3,7 @@ import asyncio
 import aiohttp
 from pytraccar.api import API
 
-HOST = "192.168.2.105"
+HOST = "192.168.100.3"
 PORT = 8072
 USERNAME = "admin"
 PASSWORD = "admin"
