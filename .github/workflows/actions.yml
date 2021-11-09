@@ -23,7 +23,7 @@ jobs:
           python-version: 3.x
 
       - name: 📦 Install dependencies
-        run:  python3 -m pip install -r requirements
+        run:  python3 -m pip install -r requirements.txt
 
       - name: 🖤 Lint with Black
         run:  python3 -m black --check --fast .
@@ -45,7 +45,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: 📦 Install dependencies
-        run:  python3 -m pip install -r requirements
+        run:  python3 -m pip install -r requirements.txt
 
       - name: 🏃 Run tests
         run:  python3 -m pytest tests
