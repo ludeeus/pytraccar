@@ -1,0 +1,51 @@
+name: Actions
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: 🛠 Set up Python 3
+        uses: actions/setup-python@v2.2.2
+        id: python
+        with:
+          python-version: 3.x
+
+      - name: 📦 Install dependencies
+        run:  python3 -m pip install -r requirements
+
+      - name: 🖤 Lint with Black
+        run:  python3 -m black --check --fast .
+
+  test:
+    name: Test with Python ${{ matrix.python-version }}
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9, "3.10"]
+    steps:
+      - name: 📥 Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: 🛠️ Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📦 Install dependencies
+        run:  python3 -m pip install -r requirements
+
+      - name: 🏃 Run tests
+        run:  python3 -m pytest tests
