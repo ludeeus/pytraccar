@@ -113,10 +113,14 @@ class API(object):  # pylint: disable=too-many-instance-attributes
                                 if attr in nested:
                                     attrvalue = nested.get(attr)
                                     devinfo[uid][attr] = attrvalue
-                        try:
-                            geofence = self.geofences[dev["geofenceIds"][0]]
-                        except IndexError:
-                            geofence = None
+
+                        geofence = None
+                        if dev["geofenceIds"]:
+                            # Due to a bug in 5.1 traccar can return null here...
+                            try:
+                                geofence = self.geofences[dev["geofenceIds"][0]]
+                            except (IndexError, TypeError):
+                                pass
 
                         devinfo[uid]["geofence"] = geofence
             if devinfo:

@@ -31,7 +31,7 @@ def devices_response():
             "status": "online",
             "lastUpdate": "1970-01-01T00:00:00.000+0000",
             "positionId": 22222,
-            "geofenceIds": [2],
+            "geofenceIds": None,
             "phone": "",
             "model": "",
             "contact": "",
