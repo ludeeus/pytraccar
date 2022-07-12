@@ -1,6 +1,5 @@
 """Communication tests."""
 import json
-from types import NoneType
 
 import aiohttp
 import pytest
@@ -62,4 +61,3 @@ async def test_device_info(
             assert isinstance(traccar.device_info[device]["category"], str)
             assert isinstance(traccar.device_info[device]["battery"], float)
             assert isinstance(traccar.device_info[device]["motion"], bool)
-            assert isinstance(traccar.device_info[device]["geofence"], (str, NoneType))
