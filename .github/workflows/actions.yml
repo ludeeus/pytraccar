@@ -14,19 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 🛠 Set up Python 3
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v3
         id: python
         with:
           python-version: 3.x
 
       - name: 📦 Install dependencies
-        run:  python3 -m pip install -r requirements.txt
+        run:  make requirements
 
       - name: 🖤 Lint with Black
-        run:  python3 -m black --check --fast .
+        run:  make black-check
+
+      - name: 🔤 Lint with isort
+        run: make isort-check
+
+      - name: 🔢 Lint with mypy
+        run: make mypy
 
   test:
     name: Test with Python ${{ matrix.python-version }}
@@ -34,18 +40,47 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.9, "3.10"]
     steps:
       - name: 📥 Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: 🛠️ Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: 📦 Install dependencies
-        run:  python3 -m pip install -r requirements.txt
+        run: make requirements
 
       - name: 🏃 Run tests
-        run:  python3 -m pytest tests
+        run: make test
+
+      - name: 🛠 Build
+        run: make build
+
+  coverage:
+    name: Coverage
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 🛠 Set up Python 3
+        uses: actions/setup-python@v3
+        id: python
+        with:
+          python-version: 3.x
+
+      - name: 📦 Install dependencies
+        run:  make requirements
+
+      - name: 📤 Upload coverage to Codecov
+        run: |
+          make coverage
+          curl -sfSL https://codecov.io/bash | bash -
