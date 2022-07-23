@@ -1,5 +1,6 @@
 """Model for the reports/events response."""
 from __future__ import annotations
+
 from typing import Any
 
 from pydantic import BaseModel, Field
