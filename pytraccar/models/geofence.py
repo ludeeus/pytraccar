@@ -1,7 +1,5 @@
 """Model for the geofence response."""
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -17,7 +15,7 @@ class GeofenceModel(BaseModel):
 
     id: int
     name: str
-    description: str | None
+    description: Optional[str]
     area: str
     calendar_id: str = Field(alias="calendarId")
     attributes: dict[str, Any]

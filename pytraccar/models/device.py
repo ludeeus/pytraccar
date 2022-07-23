@@ -1,7 +1,5 @@
 """Model for the devices response."""
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,12 +18,12 @@ class DeviceModel(BaseModel):
     unique_id: str = Field(alias="uniqueId")
     status: str
     disabled: bool
-    last_update: str | None = Field(alias="lastUpdate")
+    last_update: Optional[str] = Field(alias="lastUpdate")
     position_id: int = Field(alias="positionId")
     group_id: int = Field(alias="groupId")
-    phone: str | None
-    model: str | None
-    contact: str | None
-    category: str | None
-    geofence_ids: list[int] | None = Field(alias="geofenceIds")
+    phone: Optional[str]
+    model: Optional[str]
+    contact: Optional[str]
+    category: Optional[str]
+    geofence_ids: Optional[list[int]] = Field(alias="geofenceIds")
     attributes: dict[str, Any]

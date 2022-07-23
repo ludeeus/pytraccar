@@ -1,7 +1,5 @@
 """Model for the server response."""
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,15 +18,15 @@ class ServerModel(BaseModel):
     readonly: bool
     device_readonly: bool = Field(alias="deviceReadonly")
     limit_commands: bool = Field(alias="limitCommands")
-    map: str | None
-    bing_key: str | None = Field(alias="bingKey")
-    map_url: str | None = Field(alias="mapUrl")
-    poi_layer: str | None = Field(alias="poiLayer")
+    map: Optional[str]
+    bing_key: Optional[str] = Field(alias="bingKey")
+    map_url: Optional[str] = Field(alias="mapUrl")
+    poi_layer: Optional[str] = Field(alias="poiLayer")
     latitude: float
     longitude: float
     zoom: int
     twelve_hour_format: bool = Field(alias="twelveHourFormat")
     version: str
     force_settings: bool = Field(alias="forceSettings")
-    coordinate_format: str | None = Field(alias="coordinateFormat")
+    coordinate_format: Optional[str] = Field(alias="coordinateFormat")
     attributes: dict[str, Any]

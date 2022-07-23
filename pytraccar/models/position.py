@@ -1,7 +1,5 @@
 """Model for the position response."""
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -28,7 +26,7 @@ class PositionModel(BaseModel):
     altitude: int
     speed: int
     course: int
-    address: str | None
+    address: Optional[str]
     accuracy: int
-    network: dict[str, Any] | None
+    network: Optional[dict[str, Any]]
     attributes: dict[str, Any]
