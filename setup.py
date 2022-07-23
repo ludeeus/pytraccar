@@ -14,7 +14,7 @@ setuptools.setup(
     install_requires=["aiohttp"],
     long_description_content_type="text/markdown",
     url="https://github.com/ludeeus/pytraccar",
-    packages=setuptools.find_packages(exclude=["tests.*", "tests"]),
+    packages=setuptools.find_packages(include=["pytraccar.*", "pytraccar"]),
     classifiers=(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
