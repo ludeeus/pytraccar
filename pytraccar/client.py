@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, Type, TypeVar, cast
 
@@ -132,10 +132,14 @@ class ApiClient:
         devices: list[int] | None = None,
         groups: list[int] | None = None,
         event_types: list[str] | None = None,
-        start_time: datetime = datetime.utcnow(),
-        end_time: datetime = datetime.utcnow() - timedelta(hours=30),
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
     ) -> list[ReportsEventeModel]:
         """Get events."""
+        start_time = start_time or datetime.now(tz=timezone.utc).replace(tzinfo=None)
+        end_time = end_time or datetime.now(tz=timezone.utc).replace(tzinfo=None) - timedelta(
+            hours=30
+        )
         return self._parse_response(
             list[ReportsEventeModel],
             await self._call_api(
