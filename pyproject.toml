@@ -27,6 +27,7 @@ pydantic = "^1"
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
 isort = "^5.10.1"
+frozenlist = "^1.4.0"
 mypy = "^0.931"
 pylint = "^2.12.2"
 pytest = "^7.0.1"
