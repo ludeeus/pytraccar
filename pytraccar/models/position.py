@@ -20,6 +20,7 @@ class PositionModel(TypedDict):
     outdated: bool
     valid: bool
     latitude: float
+    geofenceIds: Optional[list[int]]
     longitude: float
     altitude: int
     speed: int
