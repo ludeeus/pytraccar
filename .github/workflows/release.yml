@@ -24,9 +24,7 @@ jobs:
         run:  make install-poetry
 
       - name: 🔢 Set version number
-        run: |
-          export version=${{ github.ref }}
-          poetry version "${version##*/}"
+        run: poetry version "${{ github.event.release.tag_name }}"
 
       - name: 🚀 Publish to PyPi
         env:
