@@ -1,10 +1,8 @@
 """Model for the geofence response."""
-from typing import Any, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any, Optional, TypedDict
 
 
-class GeofenceModel(BaseModel):
+class GeofenceModel(TypedDict):
     """Model for the geofence response.
 
     ref: https://www.traccar.org/api-reference/#tag/Geofences/paths/~1geofences/get
@@ -17,5 +15,5 @@ class GeofenceModel(BaseModel):
     name: str
     description: Optional[str]
     area: str
-    calendar_id: str = Field(alias="calendarId")
+    calendarId: str
     attributes: dict[str, Any]

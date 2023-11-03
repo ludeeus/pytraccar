@@ -1,10 +1,8 @@
 """Model for the position response."""
-from typing import Any, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any, Optional, TypedDict
 
 
-class PositionModel(BaseModel):
+class PositionModel(TypedDict):
     """Model for the position response.
 
     ref: https://www.traccar.org/api-reference/#tag/Devices/paths/~1devices/get
@@ -14,11 +12,11 @@ class PositionModel(BaseModel):
     """
 
     id: int
-    device_id: int = Field(alias="deviceId")
+    deviceId: int
     protocol: str
-    device_time: str = Field(alias="deviceTime")
-    fix_time: str = Field(alias="fixTime")
-    server_time: str = Field(alias="serverTime")
+    deviceTime: str
+    fixTime: str
+    serverTime: str
     outdated: bool
     valid: bool
     latitude: float

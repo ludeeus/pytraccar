@@ -1,10 +1,8 @@
 """Model for the devices response."""
-from typing import Any, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any, Optional, TypedDict
 
 
-class DeviceModel(BaseModel):
+class DeviceModel(TypedDict):
     """Model for the devices response.
 
     ref: https://www.traccar.org/api-reference/#tag/Devices/paths/~1devices/get
@@ -15,15 +13,15 @@ class DeviceModel(BaseModel):
 
     id: int
     name: str
-    unique_id: str = Field(alias="uniqueId")
+    uniqueId: str
     status: str
     disabled: bool
-    last_update: Optional[str] = Field(alias="lastUpdate")
-    position_id: int = Field(alias="positionId")
-    group_id: int = Field(alias="groupId")
+    lastUpdate: Optional[str]
+    positionId: int
+    groupId: int
     phone: Optional[str]
     model: Optional[str]
     contact: Optional[str]
     category: Optional[str]
-    geofence_ids: Optional[list[int]] = Field(alias="geofenceIds")
+    geofenceIds: Optional[list[int]]
     attributes: dict[str, Any]

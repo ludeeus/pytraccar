@@ -22,7 +22,6 @@ version = "0"
 [tool.poetry.dependencies]
 python = "^3.8"
 aiohttp = "^3.6"
-pydantic = "^1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
