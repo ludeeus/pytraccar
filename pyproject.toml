@@ -20,7 +20,7 @@ repository = "https://github.com/ludeeus/pytraccar"
 version = "0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.11"
 aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
