@@ -1,11 +1,9 @@
 """Test fixtures and configuration."""
-# pylint: disable=redefined-outer-name,protected-access
-from datetime import datetime
 import logging
-from unittest.mock import AsyncMock, patch
 import aiohttp
 
 import pytest
+import pytest_asyncio
 from pytraccar import ApiClient
 
 
@@ -13,6 +11,8 @@ from tests.common import MockedRequests, MockResponse
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("pytraccar").setLevel(logging.DEBUG)
+
+pytest_plugins = ('pytest_asyncio',)
 
 
 @pytest.fixture()
@@ -27,8 +27,7 @@ def mock_response():
     yield MockResponse()
 
 
-@pytest.mark.asyncio
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client_session(mock_response, mock_requests):
     """Mock our the request part of the client session."""
 
@@ -47,10 +46,9 @@ async def client_session(mock_response, mock_requests):
         yield session
 
 
-@pytest.mark.asyncio
-@pytest.fixture
+@pytest_asyncio.fixture
 async def api_client(client_session):
-    """Fixture to provide a Api Client."""
+    """Fixture to provide a API Client."""
     yield ApiClient(
         host="127.0.0.1",
         port=1337,

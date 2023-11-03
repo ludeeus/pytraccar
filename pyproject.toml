@@ -30,7 +30,7 @@ frozenlist = "^1.4.0"
 mypy = "^1.6.1"
 pylint = "^3.0.2"
 pytest = "^7.4.3"
-pytest-asyncio = "^0.15.1"
+pytest-asyncio = "^0.21.1"
 pytest-cov = "^3.0.0"
 
 [tool.black]
@@ -52,3 +52,6 @@ omit = ["example.py", "tests/*"]
 
 [tool.coverage.report]
 exclude_lines = ["if TYPE_CHECKING:"]
+
+[tool.pytest]
+asyncio_mode = "strict"
