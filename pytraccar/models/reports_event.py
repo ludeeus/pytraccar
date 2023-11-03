@@ -1,10 +1,8 @@
 """Model for the reports/events response."""
-from typing import Any
-
-from pydantic import BaseModel, Field
+from typing import Any, TypedDict
 
 
-class ReportsEventeModel(BaseModel):
+class ReportsEventeModel(TypedDict):
     """Model for the reports/events response.
 
     ref: https://www.traccar.org/api-reference/#tag/Reports/paths/~1reports~1events/get
@@ -15,9 +13,9 @@ class ReportsEventeModel(BaseModel):
 
     id: int
     type: str
-    event_time: str = Field(alias="eventTime")
-    device_id: int = Field(alias="deviceId")
-    position_id: int = Field(alias="positionId")
-    geofence_id: int = Field(alias="geofenceId")
-    maintenance_id: int = Field(alias="maintenanceId")
+    eventTime: str
+    deviceId: int
+    positionId: int
+    geofenceId: int
+    maintenanceId: int
     attributes: dict[str, Any]

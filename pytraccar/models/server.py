@@ -1,10 +1,8 @@
 """Model for the server response."""
-from typing import Any, Optional
-
-from pydantic import BaseModel, Field
+from typing import Any, Optional, TypedDict
 
 
-class ServerModel(BaseModel):
+class ServerModel(TypedDict):
     """Model for the server response.
 
     ref: https://www.traccar.org/api-reference/#tag/Server/paths/~1server/get
@@ -16,17 +14,17 @@ class ServerModel(BaseModel):
     id: int
     registration: bool
     readonly: bool
-    device_readonly: bool = Field(alias="deviceReadonly")
-    limit_commands: bool = Field(alias="limitCommands")
+    deviceReadonly: bool
+    limitCommands: bool
     map: Optional[str]
-    bing_key: Optional[str] = Field(alias="bingKey")
-    map_url: Optional[str] = Field(alias="mapUrl")
-    poi_layer: Optional[str] = Field(alias="poiLayer")
+    bingKey: Optional[str]
+    mapUrl: Optional[str]
+    poiLayer: Optional[str]
     latitude: float
     longitude: float
     zoom: int
-    twelve_hour_format: bool = Field(alias="twelveHourFormat")
+    twelveHourFormat: bool
     version: str
-    force_settings: bool = Field(alias="forceSettings")
-    coordinate_format: Optional[str] = Field(alias="coordinateFormat")
+    forceSettings: bool
+    coordinateFormat: Optional[str]
     attributes: dict[str, Any]

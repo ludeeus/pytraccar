@@ -4,10 +4,9 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta, timezone
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any, Type, TypeVar, cast
+from typing import Any
 
 import aiohttp
-from pydantic import ValidationError, parse_obj_as
 
 from .exceptions import (
     TraccarAuthenticationException,
@@ -25,9 +24,6 @@ from .models import (
 
 _LOGGER: Logger = getLogger(__package__)
 
-if TYPE_CHECKING:
-    T = TypeVar("T")
-
 
 class ApiClient:
     """
@@ -44,6 +40,7 @@ class ApiClient:
         port: int | None = None,
         ssl: bool = False,
         verify_ssl: bool = True,
+        **kwargs: Any,
     ):
         """Initialize the API client."""
         self._authentication = aiohttp.BasicAuth(username, password)
@@ -56,7 +53,7 @@ class ApiClient:
         endpoint: str,
         *,
         params: list[tuple[str, str | int]] | None = None,
-    ) -> dict[str, Any]:
+    ) -> Any:
         """Call the API endpoint and return the response."""
         _LOGGER.debug("Calling API endpoint: %s with params: %s", endpoint, params)
         try:
@@ -76,7 +73,7 @@ class ApiClient:
                 if response.status == 200:
                     result = await response.json()
                     _LOGGER.debug("API response: %s", result)
-                    return cast(dict[str, Any], result)
+                    return result
 
                 raise TraccarResponseException(f"{response.status}: {response.reason}")
         except (TraccarAuthenticationException, TraccarResponseException):
@@ -90,41 +87,25 @@ class ApiClient:
         except Exception as exception:  # pylint: disable=broad-except
             raise TraccarException(f"Unexpected error - {exception}") from exception
 
-    @staticmethod
-    def _parse_response(model: Type[T], response: Any) -> T:
-        """Parse the response as the given type."""
-        try:
-            return parse_obj_as(model, response)
-        except ValidationError as error:
-            raise TraccarResponseException(f"Invalid server response - {error}") from error
-
     async def get_server(self) -> ServerModel:
         """Get server information."""
-        return self._parse_response(
-            ServerModel,
-            await self._call_api("server"),
-        )
+        response: ServerModel = await self._call_api("server")
+        return response
 
     async def get_devices(self) -> list[DeviceModel]:
         """Get all devices from the Traccar API."""
-        return self._parse_response(
-            list[DeviceModel],
-            await self._call_api("devices"),
-        )
+        response: list[DeviceModel] = await self._call_api("devices")
+        return response
 
     async def get_geofences(self) -> list[GeofenceModel]:
         """Get all geofences from the Traccar API."""
-        return self._parse_response(
-            list[GeofenceModel],
-            await self._call_api("geofences"),
-        )
+        response: list[GeofenceModel] = await self._call_api("geofences")
+        return response
 
     async def get_positions(self) -> list[PositionModel]:
         """Get all positions from the Traccar API."""
-        return self._parse_response(
-            list[PositionModel],
-            await self._call_api("positions"),
-        )
+        response: list[PositionModel] = await self._call_api("positions")
+        return response
 
     async def get_reports_events(
         self,
@@ -134,22 +115,20 @@ class ApiClient:
         event_types: list[str] | None = None,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
+        **kwargs: Any,
     ) -> list[ReportsEventeModel]:
         """Get events."""
-        start_time = start_time or datetime.now(tz=timezone.utc).replace(tzinfo=None)
-        end_time = end_time or datetime.now(tz=timezone.utc).replace(tzinfo=None) - timedelta(
-            hours=30
+        datetime_now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
+        start_time = start_time or datetime_now
+        end_time = end_time or datetime_now - timedelta(hours=30)
+        response: list[ReportsEventeModel] = await self._call_api(
+            "reports/events",
+            params=[
+                ("to", start_time.isoformat() + "Z"),
+                ("from", end_time.isoformat() + "Z"),
+                *[("deviceId", device) for device in devices or []],
+                *[("groupId", group) for group in groups or []],
+                *[("type", value) for value in event_types or ""],
+            ],
         )
-        return self._parse_response(
-            list[ReportsEventeModel],
-            await self._call_api(
-                "reports/events",
-                params=[
-                    ("to", start_time.isoformat() + "Z"),
-                    ("from", end_time.isoformat() + "Z"),
-                    *[("deviceId", device) for device in devices or []],
-                    *[("groupId", group) for group in groups or []],
-                    *[("type", value) for value in event_types or ""],
-                ],
-            ),
-        )
+        return response
