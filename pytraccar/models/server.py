@@ -28,3 +28,5 @@ class ServerModel(TypedDict):
     forceSettings: bool
     coordinateFormat: Optional[str]
     attributes: dict[str, Any]
+    openIdEnabled: bool
+    openIdForce: bool

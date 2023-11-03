@@ -1,24 +1,24 @@
 [
-    {
-      "id": 0,
-      "deviceId": 0,
-      "protocol": "string",
-      "deviceTime": "2019-08-24T14:15:22Z",
-      "fixTime": "2019-08-24T14:15:22Z",
-      "serverTime": "2019-08-24T14:15:22Z",
-      "outdated": true,
-      "valid": true,
-      "latitude": 0,
-      "longitude": 0,
-      "altitude": 0,
-      "speed": 0,
-      "course": 0,
-      "geofenceIds": [
-        0
-      ],
-      "address": "string",
-      "accuracy": 0,
-      "network": {},
-      "attributes": {}
-    }
-  ]
+  {
+    "id": 0,
+    "deviceId": 0,
+    "protocol": "string",
+    "deviceTime": "2019-08-24T14:15:22Z",
+    "fixTime": "2019-08-24T14:15:22Z",
+    "serverTime": "2019-08-24T14:15:22Z",
+    "outdated": true,
+    "valid": true,
+    "latitude": 0,
+    "longitude": 0,
+    "altitude": 0,
+    "speed": 0,
+    "course": 0,
+    "address": "string",
+    "accuracy": 0,
+    "network": {},
+    "geofenceIds": [
+      0
+    ],
+    "attributes": {}
+  }
+]
