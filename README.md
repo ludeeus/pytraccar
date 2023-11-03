@@ -1,7 +1,7 @@
 # [pytraccar](https://pypi.org/project/pytraccar/)
 
 [![codecov](https://codecov.io/gh/ludeeus/pytraccar/branch/main/graph/badge.svg)](https://codecov.io/gh/ludeeus/pytraccar)
-![python version](https://img.shields.io/badge/Python-3.9=><=3.10-blue.svg)
+![python version](https://img.shields.io/badge/Python-3.11-blue.svg)
 [![PyPI](https://img.shields.io/pypi/v/pytraccar)](https://pypi.org/project/pytraccar)
 ![Actions](https://github.com/ludeeus/pytraccar/workflows/Actions/badge.svg?branch=main)
 
