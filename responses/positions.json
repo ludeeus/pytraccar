@@ -13,6 +13,9 @@
       "altitude": 0,
       "speed": 0,
       "course": 0,
+      "geofenceIds": [
+        0
+      ],
       "address": "string",
       "accuracy": 0,
       "network": {},

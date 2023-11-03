@@ -23,5 +23,4 @@ class DeviceModel(TypedDict):
     model: Optional[str]
     contact: Optional[str]
     category: Optional[str]
-    geofenceIds: Optional[list[int]]
     attributes: dict[str, Any]

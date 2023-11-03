@@ -12,9 +12,6 @@
       "model": "string",
       "contact": "string",
       "category": "string",
-      "geofenceIds": [
-        0
-      ],
       "attributes": {}
     }
   ]
