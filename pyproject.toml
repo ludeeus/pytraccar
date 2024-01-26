@@ -24,7 +24,7 @@ python = "^3.11"
 aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
-black = "^23.11.0"
+black = "^24.1.0"
 isort = "^5.12.0"
 frozenlist = "^1.4.0"
 mypy = "^1.6.1"
