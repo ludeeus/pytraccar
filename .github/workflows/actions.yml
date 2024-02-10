@@ -21,8 +21,14 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: install dependencies
+        run:  poetry install
+
       - name: Lint/test with pre-commit
-        run: pre-commit run --all-files
+        run: poetry run pre-commit run --all-files
 
   test:
     name: Test with Python ${{ matrix.python-version }}
