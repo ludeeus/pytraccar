@@ -55,8 +55,6 @@ class ApiClient:
         self._base_url = f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"
         self._client_session = client_session
         self._verify_ssl = verify_ssl
-        self._username = username
-        self._password = password
         self._subscription_status = SubscriptionStatus.DISCONNECTED
 
     @property
@@ -211,7 +209,10 @@ class ApiClient:
                 "session",
                 method="POST",
                 data=aiohttp.FormData(
-                    {"email": self._username, "password": self._password}
+                    {
+                        "email": self._authentication.login,
+                        "password": self._authentication.password,
+                    }
                 ),
                 headers={},
             )
