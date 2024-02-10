@@ -1,8 +1,9 @@
 """Common helpers for tests."""
 from __future__ import annotations
-from dataclasses import dataclass
-import os
+
 import json
+import os
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -63,7 +64,7 @@ class MockResponse:
         self.mock_headers = None
         self.mock_raises = None
         self.mock_status = 200
-        
+
     async def wait_for_close(self):
         pass
 
@@ -95,5 +96,5 @@ class MockedRequests:
 
     @property
     def last_request(self) -> MockResponse:
-        """last url."""
+        """Last url."""
         return self._calls[-1]

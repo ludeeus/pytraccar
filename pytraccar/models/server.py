@@ -1,5 +1,7 @@
 """Model for the server response."""
-from typing import Any, Optional, TypedDict
+from __future__ import annotations
+
+from typing import Any, TypedDict
 
 
 class ServerModel(TypedDict):
@@ -16,17 +18,17 @@ class ServerModel(TypedDict):
     readonly: bool
     deviceReadonly: bool
     limitCommands: bool
-    map: Optional[str]
-    bingKey: Optional[str]
-    mapUrl: Optional[str]
-    poiLayer: Optional[str]
+    map: str | None
+    bingKey: str | None
+    mapUrl: str | None
+    poiLayer: str | None
     latitude: float
     longitude: float
     zoom: int
     twelveHourFormat: bool
     version: str
     forceSettings: bool
-    coordinateFormat: Optional[str]
+    coordinateFormat: str | None
     attributes: dict[str, Any]
     openIdEnabled: bool
     openIdForce: bool

@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta, timezone
 from logging import Logger, getLogger
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
 
@@ -14,21 +14,21 @@ from .exceptions import (
     TraccarException,
     TraccarResponseException,
 )
-from .models import (
-    DeviceModel,
-    GeofenceModel,
-    PositionModel,
-    ReportsEventeModel,
-    ServerModel,
-)
+
+if TYPE_CHECKING:
+    from .models import (
+        DeviceModel,
+        GeofenceModel,
+        PositionModel,
+        ReportsEventeModel,
+        ServerModel,
+    )
 
 _LOGGER: Logger = getLogger(__package__)
 
 
 class ApiClient:
-    """
-    Class for interacting with the Traccar API.
-    """
+    """Class for interacting with the Traccar API."""
 
     def __init__(
         self,
@@ -40,8 +40,8 @@ class ApiClient:
         port: int | None = None,
         ssl: bool = False,
         verify_ssl: bool = True,
-        **kwargs: Any,
-    ):
+        **_: Any,
+    ) -> None:
         """Initialize the API client."""
         self._authentication = aiohttp.BasicAuth(username, password)
         self._base_url = f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"
@@ -70,14 +70,15 @@ class ApiClient:
                 if response.status == 401:
                     raise TraccarAuthenticationException("Unauthorized")
                 if response.status == 200:
-                    result = await response.json()
-                    return result
+                    return await response.json()
 
                 raise TraccarResponseException(f"{response.status}: {response.reason}")
         except (TraccarAuthenticationException, TraccarResponseException):
             raise
         except asyncio.TimeoutError as exception:
-            raise TraccarConnectionException("Timeouterror connecting to Traccar") from exception
+            raise TraccarConnectionException(
+                "Timeouterror connecting to Traccar"
+            ) from exception
         except (aiohttp.ClientError, asyncio.CancelledError) as exception:
             raise TraccarConnectionException(
                 f"Could not communicate with Traccar - {exception}"
@@ -113,7 +114,7 @@ class ApiClient:
         event_types: list[str] | None = None,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
-        **kwargs: Any,
+        **_: Any,
     ) -> list[ReportsEventeModel]:
         """Get events."""
         datetime_now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
