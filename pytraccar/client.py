@@ -10,7 +10,6 @@ from typing import Any, Awaitable
 
 import aiohttp
 
-
 from .exceptions import (
     TraccarAuthenticationException,
     TraccarConnectionException,

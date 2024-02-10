@@ -1,7 +1,7 @@
 """Model for the subscription."""
 from __future__ import annotations
-from enum import StrEnum
 
+from enum import StrEnum
 from typing import TYPE_CHECKING, Optional, TypedDict
 
 if TYPE_CHECKING:
