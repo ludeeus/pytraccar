@@ -63,6 +63,9 @@ class MockResponse:
         self.mock_headers = None
         self.mock_raises = None
         self.mock_status = 200
+        
+    async def wait_for_close(self):
+        pass
 
 
 class MockedRequests:
