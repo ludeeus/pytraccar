@@ -1,5 +1,7 @@
 """Model for the geofence response."""
-from typing import Any, Optional, TypedDict
+from __future__ import annotations
+
+from typing import Any, TypedDict
 
 
 class GeofenceModel(TypedDict):
@@ -13,7 +15,7 @@ class GeofenceModel(TypedDict):
 
     id: int
     name: str
-    description: Optional[str]
+    description: str | None
     area: str
     calendarId: str
     attributes: dict[str, Any]

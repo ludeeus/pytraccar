@@ -22,8 +22,8 @@ Look at the file `example.py` for a usage example.
 1. Fork the repository
 2. Clone the repository locally and open the devcontainer or use GitHub codespaces
 3. Do your changes
-4. Lint the files with `make lint`
-5. Ensure all tests passes with `make test`
-6. Ensure 100% coverage with `make coverage`
+4. Lint the files with `poetry run ruff check --fix pytraccar`
+5. Format the files with `poetry run ruff format`
+6. Ensure all tests passes and coverage is still at 100% with `poetry run pytest --cov`
 7. Commit your work, and push it to GitHub
 8. Create a PR against the `main` branch

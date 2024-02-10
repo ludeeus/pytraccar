@@ -1,5 +1,7 @@
 """Model for the position response."""
-from typing import Any, Optional, TypedDict
+from __future__ import annotations
+
+from typing import Any, TypedDict
 
 
 class PositionModel(TypedDict):
@@ -20,12 +22,12 @@ class PositionModel(TypedDict):
     outdated: bool
     valid: bool
     latitude: float
-    geofenceIds: Optional[list[int]]
+    geofenceIds: list[int] | None
     longitude: float
     altitude: int
     speed: int
     course: int
-    address: Optional[str]
+    address: str | None
     accuracy: int
-    network: Optional[dict[str, Any]]
+    network: dict[str, Any] | None
     attributes: dict[str, Any]

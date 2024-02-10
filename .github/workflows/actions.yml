@@ -13,25 +13,19 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@v4.1.1
 
-      - name: 🛠 Set up Python 3
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5.0.0
         with:
           python-version: "3.11"
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run:  make requirements
 
-      - name: 🖤 Lint with Black
-        run:  make black-check
-
-      - name: 🔤 Lint with isort
-        run: make isort-check
-
-      - name: 🔢 Lint with mypy
-        run: make mypy
+      - name: Lint/test with pre-commit
+        run: pre-commit run --all-files
 
   test:
     name: Test with Python ${{ matrix.python-version }}
@@ -43,44 +37,50 @@ jobs:
           - "3.11"
           - "3.12"
     steps:
-      - name: 📥 Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
-      - name: 🛠️ Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: 📦 Install dependencies
-        run: make requirements
+      - name: Install poetry
+        run: pipx install poetry
 
-      - name: 🏃 Run tests
-        run: make test
+      - name: install dependencies
+        run:  poetry install
 
-      - name: 🛠 Build
-        run: make build
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Build
+        run: poetry build
 
   coverage:
     name: Coverage
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
-      - name: 🛠 Set up Python 3
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5.0.0
         with:
           python-version: "3.11"
 
-      - name: 📦 Install dependencies
-        run:  make requirements
+      - name: Install poetry
+        run: pipx install poetry
 
-      - name: 📤 Upload coverage to Codecov
+      - name: install dependencies
+        run:  poetry install
+
+      - name: Upload coverage to Codecov
         run: |
-          make coverage
+          poetry run pytest --cov
           curl -sfSL https://codecov.io/bash | bash -

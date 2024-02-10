@@ -1,5 +1,7 @@
 """Model for the devices response."""
-from typing import Any, Optional, TypedDict
+from __future__ import annotations
+
+from typing import Any, TypedDict
 
 
 class DeviceModel(TypedDict):
@@ -16,11 +18,11 @@ class DeviceModel(TypedDict):
     uniqueId: str
     status: str
     disabled: bool
-    lastUpdate: Optional[str]
+    lastUpdate: str | None
     positionId: int
     groupId: int
-    phone: Optional[str]
-    model: Optional[str]
-    contact: Optional[str]
-    category: Optional[str]
+    phone: str | None
+    model: str | None
+    contact: str | None
+    category: str | None
     attributes: dict[str, Any]
