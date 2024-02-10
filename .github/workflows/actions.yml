@@ -21,9 +21,6 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run:  make requirements
-
       - name: Lint/test with pre-commit
         run: pre-commit run --all-files
 
