@@ -55,7 +55,6 @@ class ApiClient:
         params: list[tuple[str, str | int]] | None = None,
     ) -> Any:
         """Call the API endpoint and return the response."""
-        _LOGGER.debug("Calling API endpoint: %s with params: %s", endpoint, params)
         try:
             async with self._client_session.get(
                 url=f"{self._base_url}/{endpoint}",
@@ -72,7 +71,6 @@ class ApiClient:
                     raise TraccarAuthenticationException("Unauthorized")
                 if response.status == 200:
                     result = await response.json()
-                    _LOGGER.debug("API response: %s", result)
                     return result
 
                 raise TraccarResponseException(f"{response.status}: {response.reason}")
