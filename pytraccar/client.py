@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from contextlib import suppress
 from datetime import datetime, timedelta, timezone
 from logging import Logger, getLogger
-from typing import Any, Awaitable
+from typing import TYPE_CHECKING, Any, Awaitable
 
 import aiohttp
 
@@ -17,22 +16,27 @@ from .exceptions import (
     TraccarResponseException,
 )
 from .models import (
-    DeviceModel,
-    GeofenceModel,
-    PositionModel,
-    ReportsEventeModel,
-    ServerModel,
     SubscriptionData,
     SubscriptionStatus,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from .models import (
+        DeviceModel,
+        GeofenceModel,
+        PositionModel,
+        ReportsEventeModel,
+        ServerModel,
+    )
+
 
 _LOGGER: Logger = getLogger(__package__)
 
 
 class ApiClient:
-    """
-    Class for interacting with the Traccar API.
-    """
+    """Class for interacting with the Traccar API."""
 
     def __init__(
         self,
@@ -44,8 +48,8 @@ class ApiClient:
         port: int | None = None,
         ssl: bool = False,
         verify_ssl: bool = True,
-        **kwargs: Any,
-    ):
+        **_: Any,
+    ) -> None:
         """Initialize the API client."""
         self._authentication = aiohttp.BasicAuth(username, password)
         self._base_url = f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"
@@ -63,18 +67,17 @@ class ApiClient:
     async def _call_api(
         self,
         endpoint: str,
-        mehtod: str = "GET",
+        method: str = "GET",
         *,
         params: list[tuple[str, str | int]] | None = None,
         headers: dict[str, str] | None = None,
         data: Any | None = None,
-        **kwargs: Any,
+        **_: Any,
     ) -> Any:
         """Call the API endpoint and return the response."""
-        _LOGGER.debug("Calling API endpoint: %s with params: %s", endpoint, params)
         try:
             async with self._client_session.request(
-                method=mehtod,
+                method=method,
                 url=f"{self._base_url}/{endpoint}",
                 auth=self._authentication,
                 verify_ssl=self._verify_ssl,
@@ -91,15 +94,15 @@ class ApiClient:
                 if response.status == 401:
                     raise TraccarAuthenticationException("Unauthorized")
                 if response.status == 200:
-                    result = await response.json()
-                    _LOGGER.debug("API response: %s", result)
-                    return result
+                    return await response.json()
 
                 raise TraccarResponseException(f"{response.status}: {response.reason}")
         except (TraccarAuthenticationException, TraccarResponseException):
             raise
         except asyncio.TimeoutError as exception:
-            raise TraccarConnectionException("Timeouterror connecting to Traccar") from exception
+            raise TraccarConnectionException(
+                "Timeouterror connecting to Traccar"
+            ) from exception
         except (aiohttp.ClientError, asyncio.CancelledError) as exception:
             raise TraccarConnectionException(
                 f"Could not communicate with Traccar - {exception}"
@@ -135,7 +138,7 @@ class ApiClient:
         event_types: list[str] | None = None,
         start_time: datetime | None = None,
         end_time: datetime | None = None,
-        **kwargs: Any,
+        **_: Any,
     ) -> list[ReportsEventeModel]:
         """Get events."""
         datetime_now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
@@ -153,7 +156,9 @@ class ApiClient:
         )
         return response
 
-    async def subscribe(self, callback: Callable[[SubscriptionData], Awaitable[None]]) -> None:
+    async def subscribe(
+        self, callback: Callable[[SubscriptionData], Awaitable[None]]
+    ) -> None:
         """Subscribe to events."""
 
         async def _subscriber() -> None:
@@ -204,17 +209,21 @@ class ApiClient:
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/post
             await self._call_api(
                 "session",
-                mehtod="POST",
-                data=aiohttp.FormData({"email": self._username, "password": self._password}),
+                method="POST",
+                data=aiohttp.FormData(
+                    {"email": self._username, "password": self._password}
+                ),
                 headers={},
             )
             await _subscriber()
         except TraccarConnectionException:
             raise
         except asyncio.TimeoutError as exception:
-            raise TraccarConnectionException("Timeout error connecting to Traccar") from exception
+            raise TraccarConnectionException(
+                "Timeout error connecting to Traccar"
+            ) from exception
         except asyncio.CancelledError:
-            raise TraccarConnectionException("Subscription cancelled")
+            raise TraccarConnectionException("Subscription cancelled") from None
         except aiohttp.ClientError as exception:
             raise TraccarConnectionException(
                 f"Could not communicate with Traccar - {exception}"
@@ -228,6 +237,6 @@ class ApiClient:
             with suppress(TraccarException):
                 await self._call_api(
                     "session",
-                    mehtod="DELETE",
+                    method="DELETE",
                     headers={},
                 )

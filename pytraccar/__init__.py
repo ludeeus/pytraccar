@@ -1,6 +1,4 @@
-"""
-[GitHub repository](https://github.com/ludeeus/pytraccar)
-"""
+"""[GitHub repository](https://github.com/ludeeus/pytraccar)."""
 from .client import ApiClient
 from .exceptions import (
     TraccarAuthenticationException,

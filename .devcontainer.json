@@ -1,28 +1,52 @@
 {
 	"name": "pytraccar",
-	"image": "mcr.microsoft.com/vscode/devcontainers/python:0-3.11",
-	"postCreateCommand": "make requirements",
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"[python]": {
+					"editor.codeActionsOnSave": {
+						"source.fixAll": "always",
+						"source.organizeImports": "always"
+					},
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "charliermarsh.ruff"
+				},
+				"coverage-gutters.customizable.context-menu": true,
+				"coverage-gutters.customizable.status-bar-toggler-watchCoverageAndVisibleEditors-enabled": true,
+				"coverage-gutters.showGutterCoverage": false,
+				"coverage-gutters.showLineCoverage": true,
+				"coverage-gutters.xmlname": "coverage.xml",
+				"python.analysis.extraPaths": [
+					"${workspaceFolder}/src"
+				],
+				"python.formatting.provider": "ruff format",
 				"python.linting.enabled": true,
-				"python.linting.pylintEnabled": true,
-				"python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-				"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-				"python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
-				"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-				"python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-				"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-				"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-				"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-				"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
-			},
-			"extensions": [
-				"ms-python.python",
-				"ms-python.vscode-pylance",
-				"GitHub.copilot"
-			]
+				"python.linting.mypyEnabled": true,
+				"python.testing.cwd": "${workspaceFolder}",
+				"python.testing.pytestArgs": [
+					"--cov-report=xml"
+				],
+				"python.testing.pytestEnabled": true,
+				"ruff.importStrategy": "fromEnvironment",
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"extensions": [
+					"be5invis.toml",
+					"GitHub.copilot",
+					"ms-python.python",
+					"charliermarsh.ruff",
+					"ms-python.vscode-pylance",
+					"ryanluker.vscode-coverage-gutters"
+				]
+			}
 		}
-	}
+	},
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": false,
+			"version": "3.11"
+		}
+	},
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+	"updateContentCommand": "poetry install && poetry run pre-commit install"
 }

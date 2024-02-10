@@ -1,12 +1,11 @@
 """Test fixtures and configuration."""
 import logging
-import aiohttp
 
+import aiohttp
 import pytest
 import pytest_asyncio
+
 from pytraccar import ApiClient
-
-
 from tests.common import MockedRequests, MockResponse, WSMessageHandler
 
 logging.basicConfig(level=logging.ERROR)
@@ -15,22 +14,22 @@ logging.getLogger("pytraccar").setLevel(logging.DEBUG)
 pytest_plugins = ("pytest_asyncio",)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_requests():
     """Return a new mock request instanse."""
-    yield MockedRequests()
+    return MockedRequests()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_response():
     """Return a new mock response instanse."""
-    yield MockResponse()
+    return MockResponse()
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_ws_messages():
     """Return a new mock ws instanse."""
-    yield WSMessageHandler()
+    return WSMessageHandler()
 
 
 @pytest_asyncio.fixture

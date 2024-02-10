@@ -6,7 +6,6 @@ import aiohttp
 from pytraccar import ApiClient
 
 
-
 async def test():
     """Example usage of pytraccar."""
     async with aiohttp.ClientSession() as client_session:

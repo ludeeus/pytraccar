@@ -11,21 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to PyPi
     steps:
-      - name: 📥 Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@v4.1.1
 
-      - name: 🛠 Set up Python
-        uses: actions/setup-python@v4.7.1
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: "3.11"
 
-      - name: 📦 Install poetry
-        run:  make install-poetry
+      - name: Install poetry
+        run: pipx install poetry
 
-      - name: 🔢 Set version number
+      - name: install dependencies
+        run:  poetry install
+
+      - name: Set version number
         run: poetry version "${{ github.event.release.tag_name }}"
 
-      - name: 🚀 Publish to PyPi
+      - name: Publish to PyPi
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
         run: poetry publish --build --no-interaction

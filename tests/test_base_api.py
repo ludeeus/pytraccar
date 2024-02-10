@@ -1,14 +1,15 @@
 """Base client tests."""
 import asyncio
+
 import aiohttp
 import pytest
 
 from pytraccar import (
     ApiClient,
     TraccarAuthenticationException,
-    TraccarResponseException,
     TraccarConnectionException,
     TraccarException,
+    TraccarResponseException,
 )
 from tests.common import MockResponse
 
@@ -21,7 +22,9 @@ async def test_base_api(api_client: ApiClient):
 
 
 @pytest.mark.asyncio
-async def test_base_api_unauthenticated(api_client: ApiClient, mock_response: MockResponse):
+async def test_base_api_unauthenticated(
+    api_client: ApiClient, mock_response: MockResponse
+):
     """Test unauthenticated base API."""
     mock_response.mock_status = 401
     with pytest.raises(TraccarAuthenticationException):
