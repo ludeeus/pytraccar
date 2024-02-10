@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import TYPE_CHECKING, Optional, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
     from .device import DeviceModel
@@ -25,6 +25,6 @@ class SubscriptionData(TypedDict):
     ref: https://www.traccar.org/traccar-api/
     """
 
-    devices: Optional[list[DeviceModel]]
-    positions: Optional[list[PositionModel]]
-    events: Optional[list[ReportsEventeModel]]
+    devices: list[DeviceModel] | None
+    positions: list[PositionModel] | None
+    events: list[ReportsEventeModel] | None

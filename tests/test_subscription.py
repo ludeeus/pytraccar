@@ -5,7 +5,12 @@ from aiohttp import WSMsgType
 import aiohttp
 import pytest
 
-from pytraccar import ApiClient, TraccarConnectionException, TraccarException, SubscriptionStatus
+from pytraccar import (
+    ApiClient,
+    TraccarConnectionException,
+    TraccarException,
+    SubscriptionStatus,
+)
 from tests.common import WSMessage
 
 
@@ -31,7 +36,9 @@ from tests.common import WSMessage
             WSMessage(type=WSMsgType.TEXT, json={"events": []}),
         ],
         [
-            WSMessage(type=WSMsgType.TEXT, json={"events": [], "devices": [], "events": []}),
+            WSMessage(
+                type=WSMsgType.TEXT, json={"events": [], "devices": [], "events": []}
+            ),
         ],
     ),
 )
