@@ -85,5 +85,5 @@ jobs:
 
       - name: Upload coverage to Codecov
         run: |
-          poetry run pytest --cov
+          poetry run pytest --cov --cov-report=xml
           curl -sfSL https://codecov.io/bash | bash -
