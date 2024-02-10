@@ -6,6 +6,17 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+from aiohttp import WSMsgType
+
+
+class WSMessage:
+    def __init__(self, type: WSMsgType, json: dict | None = None) -> None:
+        self.type = type
+        self._json = json
+
+    def json(self):
+        return self._json
+
 
 def load_response(filename):
     """Load a response."""
@@ -17,6 +28,18 @@ def load_response(filename):
     )
     with open(path, encoding="utf-8") as fptr:
         return json.loads(fptr.read())
+
+
+class WSMessageHandler:
+    messages = []
+
+    def add(self, msg: WSMessage):
+        self.messages.append(msg)
+
+    def get(self):
+        return (
+            self.messages.pop(0) if self.messages else WSMessage(type=WSMsgType.CLOSED)
+        )
 
 
 @dataclass

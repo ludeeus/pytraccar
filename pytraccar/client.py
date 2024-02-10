@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import suppress
 from datetime import datetime, timedelta, timezone
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Awaitable
 
 import aiohttp
 
@@ -14,8 +15,14 @@ from .exceptions import (
     TraccarException,
     TraccarResponseException,
 )
+from .models import (
+    SubscriptionData,
+    SubscriptionStatus,
+)
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from .models import (
         DeviceModel,
         GeofenceModel,
@@ -23,6 +30,7 @@ if TYPE_CHECKING:
         ReportsEventeModel,
         ServerModel,
     )
+
 
 _LOGGER: Logger = getLogger(__package__)
 
@@ -47,21 +55,35 @@ class ApiClient:
         self._base_url = f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"
         self._client_session = client_session
         self._verify_ssl = verify_ssl
+        self._subscription_status = SubscriptionStatus.DISCONNECTED
+
+    @property
+    def subscription_status(self) -> SubscriptionStatus:
+        """Return the current subscription status."""
+        return self._subscription_status
 
     async def _call_api(
         self,
         endpoint: str,
+        method: str = "GET",
         *,
         params: list[tuple[str, str | int]] | None = None,
+        headers: dict[str, str] | None = None,
+        data: Any | None = None,
+        **_: Any,
     ) -> Any:
         """Call the API endpoint and return the response."""
         try:
-            async with self._client_session.get(
+            async with self._client_session.request(
+                method=method,
                 url=f"{self._base_url}/{endpoint}",
                 auth=self._authentication,
                 verify_ssl=self._verify_ssl,
                 params=params,
-                headers={
+                data=data,
+                headers=headers
+                if headers is not None
+                else {
                     aiohttp.hdrs.CONTENT_TYPE: "application/json",
                     aiohttp.hdrs.ACCEPT: "application/json",
                 },
@@ -131,3 +153,91 @@ class ApiClient:
             ],
         )
         return response
+
+    async def subscribe(
+        self, callback: Callable[[SubscriptionData], Awaitable[None]]
+    ) -> None:
+        """Subscribe to events."""
+
+        async def _subscriber() -> None:
+            self._subscription_status = SubscriptionStatus.CONNECTING
+            connection = await self._client_session.ws_connect(
+                url=f"{self._base_url}/socket",
+                verify_ssl=self._verify_ssl,
+                headers={
+                    aiohttp.hdrs.CONTENT_TYPE: "application/json",
+                    aiohttp.hdrs.ACCEPT: "application/json",
+                },
+            )
+
+            self._subscription_status = SubscriptionStatus.CONNECTED
+            while not connection.closed:
+                msg = await connection.receive()
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                    if not (data := msg.json()):
+                        # Ignore empty messages
+                        continue
+                    try:
+                        await callback(
+                            {
+                                "devices": None,
+                                "events": None,
+                                "positions": None,
+                                **data,
+                            }
+                        )
+                    except Exception as exception:
+                        _LOGGER.exception(
+                            "Exception while handling message: %s(%s)",
+                            exception.__class__.__name__,
+                            exception,
+                        )
+                elif msg.type in (
+                    aiohttp.WSMsgType.CLOSED,
+                    aiohttp.WSMsgType.ERROR,
+                    aiohttp.WSMsgType.CLOSE,
+                ):
+                    raise TraccarConnectionException(
+                        f"WebSocket connection closed with {msg.type.name}"
+                    )
+                else:
+                    _LOGGER.warning("Unexpected message type %s", msg.type.name)
+
+        try:
+            # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/post
+            await self._call_api(
+                "session",
+                method="POST",
+                data=aiohttp.FormData(
+                    {
+                        "email": self._authentication.login,
+                        "password": self._authentication.password,
+                    }
+                ),
+                headers={},
+            )
+            await _subscriber()
+        except TraccarConnectionException:
+            raise
+        except asyncio.TimeoutError as exception:
+            raise TraccarConnectionException(
+                "Timeout error connecting to Traccar"
+            ) from exception
+        except asyncio.CancelledError:
+            raise TraccarConnectionException("Subscription cancelled") from None
+        except aiohttp.ClientError as exception:
+            raise TraccarConnectionException(
+                f"Could not communicate with Traccar - {exception}"
+            ) from exception
+        except Exception as exception:  # pylint: disable=broad-except
+            raise TraccarException(f"Unexpected error - {exception}") from exception
+        finally:
+            # Close the session if we can
+            # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/delete
+            self._subscription_status = SubscriptionStatus.ERROR
+            with suppress(TraccarException):
+                await self._call_api(
+                    "session",
+                    method="DELETE",
+                    headers={},
+                )

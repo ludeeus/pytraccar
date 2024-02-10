@@ -6,7 +6,7 @@ import pytest
 import pytest_asyncio
 
 from pytraccar import ApiClient
-from tests.common import MockedRequests, MockResponse
+from tests.common import MockedRequests, MockResponse, WSMessageHandler
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("pytraccar").setLevel(logging.DEBUG)
@@ -26,9 +26,26 @@ def mock_response():
     return MockResponse()
 
 
+@pytest.fixture
+def mock_ws_messages():
+    """Return a new mock ws instanse."""
+    return WSMessageHandler()
+
+
 @pytest_asyncio.fixture
-async def client_session(mock_response, mock_requests):
+async def client_session(mock_response, mock_requests, mock_ws_messages):
     """Mock our the request part of the client session."""
+
+    class MockedWSContext:
+        @property
+        def closed(self):
+            return len(mock_ws_messages.messages) == 0
+
+        async def receive(self):
+            return mock_ws_messages.get()
+
+    async def _mocked_ws_connect(*args, **kwargs):
+        return MockedWSContext()
 
     async def _mocked_request(*args, **kwargs):
         if len(args) > 2:
@@ -42,6 +59,7 @@ async def client_session(mock_response, mock_requests):
     async with aiohttp.ClientSession() as session:
         mock_requests.clear()
         session._request = _mocked_request  # pylint: disable=protected-access
+        session._ws_connect = _mocked_ws_connect
         yield session
 
 

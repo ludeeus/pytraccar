@@ -90,6 +90,7 @@ ignore = [
   "PLR2004",
   "TRY301",
   "TRY003",
+  "TRY401",
 ]
 
 select = ["ALL"]
@@ -102,4 +103,4 @@ mark-parentheses = false
 known-first-party = ["pytraccar"]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 10
+max-complexity = 15

@@ -12,6 +12,8 @@ from .models import (
     PositionModel,
     ReportsEventeModel,
     ServerModel,
+    SubscriptionData,
+    SubscriptionStatus,
 )
 
 __all__ = [
@@ -21,6 +23,8 @@ __all__ = [
     "PositionModel",
     "ReportsEventeModel",
     "ServerModel",
+    "SubscriptionData",
+    "SubscriptionStatus",
     "TraccarAuthenticationException",
     "TraccarConnectionException",
     "TraccarException",
