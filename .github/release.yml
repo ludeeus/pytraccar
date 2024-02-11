@@ -3,18 +3,18 @@ changelog:
     - title: Breaking Changes
       labels:
         - breaking-change
-    - title: Exciting New Features
+    - title: New Features
       labels:
-        - new-features
+        - new-feature
     - title: Refactor
       labels:
         - refactor
     - title: Bugfixes
       labels:
         - bugfix
-    - title: Dependency changes\n_test_
-      labels:
-        - dependencies
-    - title: Internal
+    - title: Project changes
       labels:
         - internal
+    - title: Dependency changes
+      labels:
+        - dependencies
