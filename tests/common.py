@@ -22,7 +22,7 @@ def load_response(filename):
     """Load a response."""
     filename = f"{filename}.json" if "." not in filename else filename
     path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        os.path.dirname(os.path.abspath(__file__)),
         "responses",
         filename.lower().replace("/", "_"),
     )
