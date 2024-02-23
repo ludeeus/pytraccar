@@ -15,7 +15,7 @@ from tests.common import MockResponse
 
 
 @pytest.mark.asyncio
-async def test_base_api(api_client: ApiClient):
+async def test_base_api(api_client: ApiClient) -> None:
     """Test base API."""
     response = await api_client.get_server()
     assert response["bingKey"] == "string"
@@ -24,7 +24,7 @@ async def test_base_api(api_client: ApiClient):
 @pytest.mark.asyncio
 async def test_base_api_unauthenticated(
     api_client: ApiClient, mock_response: MockResponse
-):
+) -> None:
     """Test unauthenticated base API."""
     mock_response.mock_status = 401
     with pytest.raises(TraccarAuthenticationException):
@@ -32,7 +32,9 @@ async def test_base_api_unauthenticated(
 
 
 @pytest.mark.asyncio
-async def test_base_api_issue(api_client: ApiClient, mock_response: MockResponse):
+async def test_base_api_issue(
+    api_client: ApiClient, mock_response: MockResponse
+) -> None:
     """Test API issue."""
     mock_response.mock_status = 500
     with pytest.raises(TraccarResponseException):
@@ -40,7 +42,9 @@ async def test_base_api_issue(api_client: ApiClient, mock_response: MockResponse
 
 
 @pytest.mark.asyncio
-async def test_base_api_timeout(api_client: ApiClient, mock_response: MockResponse):
+async def test_base_api_timeout(
+    api_client: ApiClient, mock_response: MockResponse
+) -> None:
     """Test API issue."""
     mock_response.mock_raises = asyncio.TimeoutError
     with pytest.raises(TraccarConnectionException):

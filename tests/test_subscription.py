@@ -1,5 +1,8 @@
 """Test subscription."""
+from __future__ import annotations
+
 import asyncio
+from typing import Any, NoReturn
 from unittest.mock import patch
 
 import aiohttp
@@ -12,43 +15,41 @@ from pytraccar import (
     TraccarConnectionException,
     TraccarException,
 )
-from tests.common import WSMessage
+from tests.common import WSMessage, WSMessageHandler
 
 
 @pytest.mark.parametrize(
     "messages",
-    (
+    [
         [
-            WSMessage(type=WSMsgType.TEXT, json={}),
-            WSMessage(type=WSMsgType.TEXT, json=None),
+            WSMessage(messagetype=WSMsgType.TEXT, json={}),
+            WSMessage(messagetype=WSMsgType.TEXT, json=None),
         ],
         [
-            WSMessage(type=WSMsgType.TEXT, json={"devices": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"devices": []}),
         ],
         [
-            WSMessage(type=WSMsgType.TEXT, json={"positions": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"positions": []}),
         ],
         [
-            WSMessage(type=WSMsgType.TEXT, json={"events": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"events": []}),
         ],
         [
-            WSMessage(type=WSMsgType.TEXT, json={"devices": []}),
-            WSMessage(type=WSMsgType.TEXT, json={"positions": []}),
-            WSMessage(type=WSMsgType.TEXT, json={"events": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"devices": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"positions": []}),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"events": []}),
         ],
         [
-            WSMessage(
-                type=WSMsgType.TEXT, json={"events": [], "devices": [], "events": []}
-            ),
+            WSMessage(messagetype=WSMsgType.TEXT, json={"events": [], "devices": []}),
         ],
-    ),
+    ],
 )
 @pytest.mark.asyncio
 async def test_subscription_text_message(
     api_client: ApiClient,
     messages: list[WSMessage],
-    mock_ws_messages,
-):
+    mock_ws_messages: WSMessageHandler,
+) -> None:
     """Test subscription text message."""
     _handled = []
     _expected_handled = []
@@ -64,7 +65,7 @@ async def test_subscription_text_message(
                 }
             )
 
-    async def _handler(data):
+    async def _handler(data: Any) -> None:
         _handled.append(data)
 
     await api_client.subscribe(_handler)
@@ -73,23 +74,23 @@ async def test_subscription_text_message(
 
 @pytest.mark.parametrize(
     "message",
-    (
-        WSMessage(type=WSMsgType.CLOSE),
-        WSMessage(type=WSMsgType.CLOSED),
-        WSMessage(type=WSMsgType.ERROR),
-    ),
+    [
+        WSMessage(messagetype=WSMsgType.CLOSE),
+        WSMessage(messagetype=WSMsgType.CLOSED),
+        WSMessage(messagetype=WSMsgType.ERROR),
+    ],
 )
 @pytest.mark.asyncio
 async def test_subscription_stopping_message(
     api_client: ApiClient,
     message: WSMessage,
-    mock_ws_messages,
-):
+    mock_ws_messages: WSMessageHandler,
+) -> None:
     """Test subscription stopping message."""
     _handled = []
     mock_ws_messages.add(message)
 
-    async def _handler(data):
+    async def _handler(data: Any) -> None:
         _handled.append(data)
 
     with pytest.raises(
@@ -102,26 +103,26 @@ async def test_subscription_stopping_message(
 
 @pytest.mark.parametrize(
     "message",
-    (
-        WSMessage(type=WSMsgType.CONTINUATION),
-        WSMessage(type=WSMsgType.BINARY),
-        WSMessage(type=WSMsgType.PING),
-        WSMessage(type=WSMsgType.PONG),
-        WSMessage(type=WSMsgType.CLOSING),
-    ),
+    [
+        WSMessage(messagetype=WSMsgType.CONTINUATION),
+        WSMessage(messagetype=WSMsgType.BINARY),
+        WSMessage(messagetype=WSMsgType.PING),
+        WSMessage(messagetype=WSMsgType.PONG),
+        WSMessage(messagetype=WSMsgType.CLOSING),
+    ],
 )
 @pytest.mark.asyncio
 async def test_subscription_unknown_type(
     api_client: ApiClient,
     message: WSMessage,
-    mock_ws_messages,
+    mock_ws_messages: WSMessageHandler,
     caplog: pytest.LogCaptureFixture,
-):
+) -> None:
     """Test subscription unknown type."""
     _handled = []
     mock_ws_messages.add(message)
 
-    async def _handler(data):
+    async def _handler(data: Any) -> None:
         _handled.append(data)
 
     assert f"Unexpected message type {message.type.name}" not in caplog.text
@@ -135,13 +136,13 @@ async def test_subscription_unknown_type(
 @pytest.mark.asyncio
 async def test_subscription_bad_handler(
     api_client: ApiClient,
-    mock_ws_messages,
+    mock_ws_messages: WSMessageHandler,
     caplog: pytest.LogCaptureFixture,
-):
+) -> None:
     """Test subscription unknown type."""
-    mock_ws_messages.add(WSMessage(type=WSMsgType.TEXT, json={"devices": []}))
+    mock_ws_messages.add(WSMessage(messagetype=WSMsgType.TEXT, json={"devices": []}))
 
-    async def _handler(data):
+    async def _handler(_: Any) -> NoReturn:
         raise ValueError("Bad handler")
 
     await api_client.subscribe(_handler)
@@ -151,7 +152,7 @@ async def test_subscription_bad_handler(
 
 @pytest.mark.parametrize(
     ("side_effect", "raises", "with_message"),
-    (
+    [
         (
             KeyError("boom"),
             TraccarException,
@@ -172,7 +173,7 @@ async def test_subscription_bad_handler(
             TraccarConnectionException,
             "",
         ),
-    ),
+    ],
 )
 @pytest.mark.asyncio
 async def test_subscription_exceptions(
@@ -180,7 +181,7 @@ async def test_subscription_exceptions(
     side_effect: Exception,
     raises: Exception,
     with_message: str,
-):
+) -> None:
     """Test subscription exceptions."""
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
     with patch(
@@ -195,7 +196,7 @@ async def test_subscription_exceptions(
 
 
 @pytest.mark.asyncio
-async def test_subscription_cancelation(api_client: ApiClient):
+async def test_subscription_cancelation(api_client: ApiClient) -> None:
     """Test subscription exceptions."""
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
     with patch(

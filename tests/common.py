@@ -2,43 +2,55 @@
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from aiohttp import WSMsgType
 
 
 class WSMessage:
-    def __init__(self, type: WSMsgType, json: dict | None = None) -> None:
-        self.type = type
+    """WSMessage."""
+
+    def __init__(self, messagetype: WSMsgType, json: dict | None = None) -> None:
+        """Initialize."""
+        self.type = messagetype
         self._json = json
 
-    def json(self):
+    def json(self) -> dict | None:
+        """json."""
         return self._json
 
 
-def load_response(filename):
+def load_response(filename: str) -> dict[str, Any]:
     """Load a response."""
     filename = f"{filename}.json" if "." not in filename else filename
-    path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
+    path = Path(
+        Path.resolve(Path(__file__)).parent,
         "responses",
         filename.lower().replace("/", "_"),
     )
-    with open(path, encoding="utf-8") as fptr:
+    with path.open(encoding="utf-8") as fptr:
         return json.loads(fptr.read())
 
 
 class WSMessageHandler:
-    messages = []
+    """WSMessageHandler."""
 
-    def add(self, msg: WSMessage):
+    def __init__(self) -> None:
+        """Initialize."""
+        self.messages = []
+
+    def add(self, msg: WSMessage) -> None:
+        """Add."""
         self.messages.append(msg)
 
-    def get(self):
+    def get(self) -> WSMessage:
+        """Get."""
         return (
-            self.messages.pop(0) if self.messages else WSMessage(type=WSMsgType.CLOSED)
+            self.messages.pop(0)
+            if self.messages
+            else WSMessage(messagetype=WSMsgType.CLOSED)
         )
 
 
@@ -56,16 +68,16 @@ class MockResponse:
     mock_status: int = 200
 
     @property
-    def status(self):
+    def status(self) -> int:
         """status."""
         return self.mock_status
 
     @property
-    def reason(self):
-        """Return the reason"""
+    def reason(self) -> str:
+        """Return the reason."""
         return "unknown"
 
-    async def json(self, **_):
+    async def json(self, **_: Any) -> Any:
         """json."""
         if self.mock_raises is not None:
             raise self.mock_raises  # pylint: disable=raising-bad-type
@@ -77,10 +89,10 @@ class MockResponse:
             return self.mock_data
         return load_response(self.mock_endpoint)
 
-    def release(self):
+    def release(self) -> None:
         """release."""
 
-    def clear(self):
+    def clear(self) -> None:
         """clear."""
         self.mock_data = None
         self.mock_endpoint = ""
@@ -88,24 +100,27 @@ class MockResponse:
         self.mock_raises = None
         self.mock_status = 200
 
-    async def wait_for_close(self):
-        pass
+    async def wait_for_close(self) -> None:
+        """wait_for_close."""
 
 
 class MockedRequests:
     """Mock request class."""
 
-    _calls = []
+    def __init__(self) -> None:
+        """Initialize."""
+        self._calls = []
 
-    def add(self, url: str):
+    def add(self, url: str) -> None:
         """add."""
         self._calls.append(url)
 
-    def clear(self):
+    def clear(self) -> None:
         """clear."""
         self._calls.clear()
 
     def __repr__(self) -> str:
+        """repr."""
         return f"<MockedRequests: {self._calls}>"
 
     @property
