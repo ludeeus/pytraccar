@@ -6,7 +6,7 @@ from pytraccar import ApiClient
 
 
 @pytest.mark.asyncio
-async def test_client_init(client_session: ClientSession):
+async def test_client_init(client_session: ClientSession) -> None:
     """Test client init."""
     client_params = {
         "host": "127.0.0.1",
@@ -16,12 +16,12 @@ async def test_client_init(client_session: ClientSession):
         "client_session": client_session,
     }
 
-    assert ApiClient(**client_params)._base_url == "http://127.0.0.1:8080/api"
+    assert ApiClient(**client_params)._base_url == "http://127.0.0.1:8080/api"  # noqa: SLF001
     assert (
-        ApiClient(**{**client_params, "port": None})._base_url
+        ApiClient(**{**client_params, "port": None})._base_url  # noqa: SLF001
         == "http://127.0.0.1:8082/api"
     )
     assert (
-        ApiClient(**{**client_params, "ssl": True})._base_url
+        ApiClient(**{**client_params, "ssl": True})._base_url  # noqa: SLF001
         == "https://127.0.0.1:8080/api"
     )
