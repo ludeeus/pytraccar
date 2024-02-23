@@ -171,7 +171,10 @@ class ApiClient:
             )
 
             self._subscription_status = SubscriptionStatus.CONNECTED
-            while not connection.closed:
+            while (
+                not connection.closed
+                and self._subscription_status == SubscriptionStatus.CONNECTED
+            ):
                 msg = await connection.receive()
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     if not (data := msg.json()):
@@ -217,24 +220,24 @@ class ApiClient:
                 headers={},
             )
             await _subscriber()
-        except TraccarConnectionException:
-            raise
-        except asyncio.TimeoutError as exception:
-            raise TraccarConnectionException(
-                "Timeout error connecting to Traccar"
-            ) from exception
         except asyncio.CancelledError:
-            raise TraccarConnectionException("Subscription cancelled") from None
-        except aiohttp.ClientError as exception:
-            raise TraccarConnectionException(
-                f"Could not communicate with Traccar - {exception}"
-            ) from exception
+            self._subscription_status = SubscriptionStatus.DISCONNECTED
         except Exception as exception:  # pylint: disable=broad-except
+            self._subscription_status = SubscriptionStatus.ERROR
+            if isinstance(exception, TraccarConnectionException):
+                raise
+            if isinstance(exception, asyncio.TimeoutError):
+                raise TraccarConnectionException(
+                    "Timeout error connecting to Traccar"
+                ) from exception
+            if isinstance(exception, aiohttp.ClientError):
+                raise TraccarConnectionException(
+                    f"Could not communicate with Traccar - {exception}"
+                ) from exception
             raise TraccarException(f"Unexpected error - {exception}") from exception
         finally:
             # Close the session if we can
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/delete
-            self._subscription_status = SubscriptionStatus.ERROR
             with suppress(TraccarException):
                 await self._call_api(
                     "session",

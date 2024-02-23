@@ -1,15 +1,16 @@
 """Test subscription."""
 import asyncio
 from unittest.mock import patch
-from aiohttp import WSMsgType
+
 import aiohttp
 import pytest
+from aiohttp import WSMsgType
 
 from pytraccar import (
     ApiClient,
+    SubscriptionStatus,
     TraccarConnectionException,
     TraccarException,
-    SubscriptionStatus,
 )
 from tests.common import WSMessage
 
@@ -162,11 +163,6 @@ async def test_subscription_bad_handler(
             "Timeout error connecting to Traccar",
         ),
         (
-            asyncio.CancelledError("boom"),
-            TraccarConnectionException,
-            "Subscription cancelled",
-        ),
-        (
             aiohttp.ClientError("boom"),
             TraccarConnectionException,
             "Could not communicate with Traccar - boom",
@@ -187,11 +183,24 @@ async def test_subscription_exceptions(
 ):
     """Test subscription exceptions."""
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
-    with patch("aiohttp.ClientSession.ws_connect", side_effect=side_effect):
-        with pytest.raises(
-            raises,
-            match=with_message,
-        ):
-            await api_client.subscribe(None)
+    with patch(
+        "aiohttp.ClientSession.ws_connect", side_effect=side_effect
+    ), pytest.raises(
+        raises,
+        match=with_message,
+    ):
+        await api_client.subscribe(None)
 
     assert api_client.subscription_status == SubscriptionStatus.ERROR
+
+
+@pytest.mark.asyncio
+async def test_subscription_cancelation(api_client: ApiClient):
+    """Test subscription exceptions."""
+    assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
+    with patch(
+        "aiohttp.ClientSession.ws_connect", side_effect=asyncio.CancelledError("boom")
+    ):
+        await api_client.subscribe(None)
+
+    assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
