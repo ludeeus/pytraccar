@@ -1,4 +1,5 @@
 """Test API endpoint."""
+
 import pytest
 
 from pytraccar import ApiClient

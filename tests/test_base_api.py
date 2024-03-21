@@ -1,4 +1,5 @@
 """Base client tests."""
+
 import asyncio
 
 import aiohttp

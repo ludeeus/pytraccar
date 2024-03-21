@@ -1,4 +1,5 @@
 """Test fixtures and configuration."""
+
 import logging
 from typing import Any, AsyncGenerator
 

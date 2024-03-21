@@ -1,4 +1,5 @@
 """Example usage of pytraccar."""
+
 import asyncio
 import logging
 import os
