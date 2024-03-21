@@ -1,4 +1,5 @@
 """Base client tests."""
+
 import pytest
 from aiohttp import ClientSession
 

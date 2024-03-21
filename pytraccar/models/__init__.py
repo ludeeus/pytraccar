@@ -1,4 +1,5 @@
 """Initialize the models module."""
+
 from .device import DeviceModel
 from .geofence import GeofenceModel
 from .position import PositionModel

@@ -1,4 +1,5 @@
 """Model for the subscription."""
+
 from __future__ import annotations
 
 from enum import StrEnum
