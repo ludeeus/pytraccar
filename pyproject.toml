@@ -32,7 +32,7 @@ pre-commit-hooks = "4.5.0"
 pytest = "8.2.1"
 pytest-asyncio = "0.23.7"
 pytest-cov = "4.1.0"
-ruff = "0.4.7"
+ruff = "0.4.8"
 safety = "3.0.1"
 
 [tool.coverage.run]
