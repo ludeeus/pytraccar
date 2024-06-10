@@ -18,19 +18,19 @@ pytest_plugins = ("pytest_asyncio",)
 
 @pytest.fixture
 def mock_requests() -> MockedRequests:
-    """Return a new mock request instanse."""
+    """Return a new mock request instance."""
     return MockedRequests()
 
 
 @pytest.fixture
 def mock_response() -> MockResponse:
-    """Return a new mock response instanse."""
+    """Return a new mock response instance."""
     return MockResponse()
 
 
 @pytest.fixture
 def mock_ws_messages() -> WSMessageHandler:
-    """Return a new mock ws instanse."""
+    """Return a new mock ws instance."""
     return WSMessageHandler()
 
 
