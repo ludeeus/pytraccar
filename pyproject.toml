@@ -25,7 +25,7 @@ aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
 codespell = "2.3.0"
-coverage = {version = "7.6.1", extras = ["toml"]}
+coverage = {version = "7.6.4", extras = ["toml"]}
 mypy = "1.11.2"
 pre-commit = "3.8.0"
 pre-commit-hooks = "4.6.0"
