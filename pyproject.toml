@@ -20,7 +20,7 @@ repository = "https://github.com/ludeeus/pytraccar"
 version = "0"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.13"
 aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
@@ -47,7 +47,7 @@ exclude_lines = [
 
 [tool.mypy]
 platform = "linux"
-python_version = "3.11"
+python_version = "3.13"
 
 # show error messages from unrelated files
 follow_imports = "normal"

@@ -44,7 +44,7 @@
 		"ghcr.io/devcontainers-contrib/features/poetry:2": {},
 		"ghcr.io/devcontainers/features/python:1": {
 			"installTools": false,
-			"version": "3.11"
+			"version": "3.13"
 		}
 	},
 	"image": "mcr.microsoft.com/devcontainers/base:ubuntu",
