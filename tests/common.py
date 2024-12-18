@@ -67,6 +67,16 @@ class MockResponse:
     mock_headers: dict[str, str] | None = None
     mock_raises: BaseException | None = None
     mock_status: int = 200
+    _in_context: bool = False
+
+    async def __aenter__(self) -> MockResponse:
+        self._in_context = True
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        self._in_context = False
+        self.release()
+        await self.wait_for_close()
 
     @property
     def status(self) -> int:
