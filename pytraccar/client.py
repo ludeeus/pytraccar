@@ -79,7 +79,7 @@ class ApiClient:
                 method=method,
                 url=f"{self._base_url}/{endpoint}",
                 auth=self._authentication,
-                verify_ssl=self._verify_ssl,
+                ssl=self._verify_ssl,
                 params=params,
                 data=data,
                 headers=headers
