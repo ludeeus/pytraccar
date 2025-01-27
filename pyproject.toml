@@ -24,7 +24,7 @@ python = "^3.13"
 aiohttp = "^3.6"
 
 [tool.poetry.dev-dependencies]
-codespell = "2.3.0"
+codespell = "2.4.0"
 coverage = {version = "7.6.10", extras = ["toml"]}
 mypy = "1.14.1"
 pre-commit = "4.0.1"
