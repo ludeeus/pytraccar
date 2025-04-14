@@ -8,11 +8,11 @@ from .server import ServerModel
 from .subscription import SubscriptionData, SubscriptionStatus
 
 __all__ = [
+    "DeviceModel",
     "GeofenceModel",
     "PositionModel",
     "ReportsEventeModel",
     "ServerModel",
-    "DeviceModel",
     "SubscriptionData",
     "SubscriptionStatus",
 ]
