@@ -185,11 +185,12 @@ async def test_subscription_exceptions(
 ) -> None:
     """Test subscription exceptions."""
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
-    with patch(
-        "aiohttp.ClientSession.ws_connect", side_effect=side_effect
-    ), pytest.raises(
-        raises,
-        match=with_message,
+    with (
+        patch("aiohttp.ClientSession.ws_connect", side_effect=side_effect),
+        pytest.raises(
+            raises,
+            match=with_message,
+        ),
     ):
         await api_client.subscribe(None)
 
