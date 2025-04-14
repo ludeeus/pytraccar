@@ -2,28 +2,37 @@
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
 
+[project]
+name = "pytraccar"
+version = "0"
+description = ""
+dynamic = ["readme", "classifiers", "dependencies"]
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Ludeeus", email = "joasoe@proton.me" },
+]
+maintainers = [
+    { name = "Ludeeus", email = "joasoe@proton.me" },
+]
+requires-python = ">=3.13"
+
+[project.urls]
+repository = "https://github.com/ludeeus/pytraccar"
+"Bug tracker" = "https://github.com/ludeeus/pytraccar/issues"
+
 [tool.poetry]
-authors = ["Ludeeus <ludeeus@ludeeus.dev>"]
 classifiers = [
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-exclude = ['**/__pycache__']
-include = ["pytraccar", "pytraccar.*", "LICENCE.md"]
-license = "MIT"
-description = ""
-maintainers = ["Ludeeus <ludeeus@ludeeus.dev>"]
-name = "pytraccar"
-readme = "README.md"
-repository = "https://github.com/ludeeus/pytraccar"
-version = "0"
 
 [tool.poetry.dependencies]
 python = "^3.13"
 aiohttp = "^3.6"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 codespell = "2.4.1"
 coverage = {version = "7.8.0", extras = ["toml"]}
 mypy = "1.15.0"
@@ -76,7 +85,6 @@ asyncio_mode = "strict"
 
 [tool.ruff.lint]
 ignore = [
-  "ANN101",
   "ANN401",
   "BLE00",
   "COM812",

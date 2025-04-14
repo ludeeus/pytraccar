@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import suppress
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any, Awaitable
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
 
@@ -22,7 +22,7 @@ from .models import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
 
     from .models import (
         DeviceModel,
@@ -98,7 +98,7 @@ class ApiClient:
                 raise TraccarResponseException(f"{response.status}: {response.reason}")
         except (TraccarAuthenticationException, TraccarResponseException):
             raise
-        except asyncio.TimeoutError as exception:
+        except TimeoutError as exception:
             raise TraccarConnectionException(
                 "Timeouterror connecting to Traccar"
             ) from exception
@@ -140,7 +140,7 @@ class ApiClient:
         **_: Any,
     ) -> list[ReportsEventeModel]:
         """Get events."""
-        datetime_now = datetime.now(tz=timezone.utc).replace(tzinfo=None)
+        datetime_now = datetime.now(tz=UTC).replace(tzinfo=None)
         start_time = start_time or datetime_now
         end_time = end_time or datetime_now - timedelta(hours=30)
         response: list[ReportsEventeModel] = await self._call_api(
