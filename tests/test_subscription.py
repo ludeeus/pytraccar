@@ -157,7 +157,7 @@ async def test_subscription_bad_handler(
         (
             KeyError("boom"),
             TraccarException,
-            "Unexpected error - 'boom'",
+            "Unexpected error",
         ),
         (
             asyncio.TimeoutError(),
@@ -167,7 +167,7 @@ async def test_subscription_bad_handler(
         (
             aiohttp.ClientError("boom"),
             TraccarConnectionException,
-            "Could not communicate with Traccar - boom",
+            "Could not communicate with Traccar",
         ),
         (
             TraccarConnectionException(),

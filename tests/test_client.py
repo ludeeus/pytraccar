@@ -11,8 +11,7 @@ async def test_client_init(client_session: ClientSession) -> None:
     """Test client init."""
     client_params = {
         "host": "127.0.0.1",
-        "username": "test",
-        "password": "test",
+        "token": "test",
         "port": 8080,
         "client_session": client_session,
     }
