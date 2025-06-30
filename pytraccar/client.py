@@ -42,8 +42,7 @@ class ApiClient:
     def __init__(
         self,
         host: str,
-        username: str,
-        password: str,
+        token: str,
         client_session: aiohttp.ClientSession,
         *,
         port: int | None = None,
@@ -52,9 +51,9 @@ class ApiClient:
         **_: Any,
     ) -> None:
         """Initialize the API client."""
-        self._authentication = aiohttp.BasicAuth(username, password)
         self._base_url = f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"
         self._client_session = client_session
+        self._token = token
         self._verify_ssl = verify_ssl
         self._subscription_status = SubscriptionStatus.DISCONNECTED
 
@@ -78,15 +77,14 @@ class ApiClient:
             async with self._client_session.request(
                 method=method,
                 url=f"{self._base_url}/{endpoint}",
-                auth=self._authentication,
                 ssl=self._verify_ssl,
                 params=params,
                 data=data,
-                headers=headers
-                if headers is not None
-                else {
-                    aiohttp.hdrs.CONTENT_TYPE: "application/json",
+                headers={
                     aiohttp.hdrs.ACCEPT: "application/json",
+                    aiohttp.hdrs.AUTHORIZATION: f"Bearer {self._token}",
+                    aiohttp.hdrs.CONTENT_TYPE: "application/json",
+                    **(headers or {}),
                 },
                 timeout=aiohttp.ClientTimeout(total=10),
             ) as response:
@@ -165,10 +163,6 @@ class ApiClient:
             connection = await self._client_session.ws_connect(
                 url=f"{self._base_url}/socket",
                 verify_ssl=self._verify_ssl,
-                headers={
-                    aiohttp.hdrs.CONTENT_TYPE: "application/json",
-                    aiohttp.hdrs.ACCEPT: "application/json",
-                },
             )
 
             self._subscription_status = SubscriptionStatus.CONNECTED
@@ -210,15 +204,11 @@ class ApiClient:
         try:
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/post
             await self._call_api(
-                "session",
-                method="POST",
-                data=aiohttp.FormData(
-                    {
-                        "email": self._authentication.login,
-                        "password": self._authentication.password,
-                    }
-                ),
-                headers={},
+                f"session?token={self._token}",
+                method="GET",
+                headers={
+                    aiohttp.hdrs.CONTENT_TYPE: "application/x-www-form-urlencoded",
+                },
             )
             await _subscriber()
         except asyncio.CancelledError:
@@ -233,9 +223,9 @@ class ApiClient:
                 ) from exception
             if isinstance(exception, aiohttp.ClientError):
                 raise TraccarConnectionException(
-                    f"Could not communicate with Traccar - {exception}"
+                    "Could not communicate with Traccar"
                 ) from exception
-            raise TraccarException(f"Unexpected error - {exception}") from exception
+            raise TraccarException("Unexpected error") from exception
         finally:
             # Close the session if we can
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/delete

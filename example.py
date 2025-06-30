@@ -24,8 +24,7 @@ async def test() -> None:
         client = ApiClient(
             host=os.environ["TRACCAR_HOST"],
             port=os.environ.get("TRACCAR_PORT", 8082),
-            username=os.environ["TRACCAR_USERNAME"],
-            password=os.environ["TRACCAR_PASSWORD"],
+            token=os.environ["TRACCAR_TOKEN"],
             client_session=client_session,
         )
         server = await client.get_server()

@@ -25,7 +25,7 @@ class WSMessage:
 
 def load_response(filename: str) -> dict[str, Any]:
     """Load a response."""
-    filename = f"{filename}.json" if "." not in filename else filename
+    filename = f"{filename.split('?')[0]}.json" if "." not in filename else filename
     path = Path(
         Path.resolve(Path(__file__)).parent,
         "responses",

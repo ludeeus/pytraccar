@@ -77,7 +77,6 @@ async def api_client(
     yield ApiClient(
         host="127.0.0.1",
         port=1337,
-        username="test",
-        password="test",  # noqa: S106
+        token="test",
         client_session=client_session,
     )
