@@ -1,5 +1,7 @@
 """Test fixtures and configuration."""
 
+from __future__ import annotations
+
 import logging
 from typing import Any, AsyncGenerator
 
@@ -48,6 +50,20 @@ async def client_session(
             return len(mock_ws_messages.messages) == 0
 
         async def receive(self) -> Any:
+            return mock_ws_messages.get()
+
+        async def __aenter__(self) -> MockedWSContext:
+            return self
+
+        async def __aexit__(self, *args: Any) -> None:
+            pass
+
+        def __aiter__(self) -> MockedWSContext:
+            return self
+
+        async def __anext__(self) -> Any:
+            if len(mock_ws_messages.messages) == 0:
+                raise StopAsyncIteration
             return mock_ws_messages.get()
 
     async def _mocked_ws_connect(*_: Any, **__: Any) -> Any:
