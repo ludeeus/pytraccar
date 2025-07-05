@@ -48,6 +48,7 @@ class ApiClient:
         port: int | None = None,
         ssl: bool = False,
         verify_ssl: bool = True,
+        ws_heartbeat: int = 120,
         **_: Any,
     ) -> None:
         """Initialize the API client."""
@@ -56,6 +57,7 @@ class ApiClient:
         self._token = token
         self._verify_ssl = verify_ssl
         self._subscription_status = SubscriptionStatus.DISCONNECTED
+        self._ws_heartbeat = ws_heartbeat
 
     @property
     def subscription_status(self) -> SubscriptionStatus:
@@ -160,46 +162,43 @@ class ApiClient:
 
         async def _subscriber() -> None:
             self._subscription_status = SubscriptionStatus.CONNECTING
-            connection = await self._client_session.ws_connect(
+            async with self._client_session.ws_connect(
                 url=f"{self._base_url}/socket",
                 verify_ssl=self._verify_ssl,
-            )
-
-            self._subscription_status = SubscriptionStatus.CONNECTED
-            while (
-                not connection.closed
-                and self._subscription_status == SubscriptionStatus.CONNECTED
-            ):
-                msg = await connection.receive()
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    if not (data := msg.json()):
-                        # Ignore empty messages
-                        continue
-                    try:
-                        await callback(
-                            {
-                                "devices": None,
-                                "events": None,
-                                "positions": None,
-                                **data,
-                            }
+                heartbeat=self._ws_heartbeat,
+            ) as ws:
+                self._subscription_status = SubscriptionStatus.CONNECTED
+                async for msg in ws:
+                    if msg.type == aiohttp.WSMsgType.TEXT:
+                        if not (data := msg.json()):
+                            # Ignore empty messages
+                            continue
+                        try:
+                            await callback(
+                                {
+                                    "devices": None,
+                                    "events": None,
+                                    "positions": None,
+                                    **data,
+                                }
+                            )
+                        except Exception as exception:
+                            _LOGGER.exception(
+                                "Exception while handling message: %s(%s)",
+                                exception.__class__.__name__,
+                                exception,
+                            )
+                    elif msg.type in (
+                        aiohttp.WSMsgType.CLOSE,
+                        aiohttp.WSMsgType.CLOSED,
+                        aiohttp.WSMsgType.CLOSING,
+                        aiohttp.WSMsgType.ERROR,
+                    ):
+                        raise TraccarConnectionException(
+                            f"WebSocket connection closed with {msg.type.name}"
                         )
-                    except Exception as exception:
-                        _LOGGER.exception(
-                            "Exception while handling message: %s(%s)",
-                            exception.__class__.__name__,
-                            exception,
-                        )
-                elif msg.type in (
-                    aiohttp.WSMsgType.CLOSED,
-                    aiohttp.WSMsgType.ERROR,
-                    aiohttp.WSMsgType.CLOSE,
-                ):
-                    raise TraccarConnectionException(
-                        f"WebSocket connection closed with {msg.type.name}"
-                    )
-                else:
-                    _LOGGER.warning("Unexpected message type %s", msg.type.name)
+                    else:
+                        _LOGGER.warning("Unexpected message type %s", msg.type.name)
 
         try:
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/post

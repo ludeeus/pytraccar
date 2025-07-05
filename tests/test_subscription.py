@@ -78,6 +78,7 @@ async def test_subscription_text_message(
     [
         WSMessage(messagetype=WSMsgType.CLOSE),
         WSMessage(messagetype=WSMsgType.CLOSED),
+        WSMessage(messagetype=WSMsgType.CLOSING),
         WSMessage(messagetype=WSMsgType.ERROR),
     ],
 )
@@ -109,7 +110,6 @@ async def test_subscription_stopping_message(
         WSMessage(messagetype=WSMsgType.BINARY),
         WSMessage(messagetype=WSMsgType.PING),
         WSMessage(messagetype=WSMsgType.PONG),
-        WSMessage(messagetype=WSMsgType.CLOSING),
     ],
 )
 @pytest.mark.asyncio
@@ -172,7 +172,7 @@ async def test_subscription_bad_handler(
         (
             TraccarConnectionException(),
             TraccarConnectionException,
-            "",
+            None,
         ),
     ],
 )
@@ -181,18 +181,17 @@ async def test_subscription_exceptions(
     api_client: ApiClient,
     side_effect: Exception,
     raises: Exception,
-    with_message: str,
+    with_message: str | None,
 ) -> None:
     """Test subscription exceptions."""
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
-    with (
-        patch("aiohttp.ClientSession.ws_connect", side_effect=side_effect),
-        pytest.raises(
-            raises,
-            match=with_message,
-        ),
-    ):
-        await api_client.subscribe(None)
+    with patch("aiohttp.ClientSession.ws_connect", side_effect=side_effect):
+        if with_message is not None:
+            with pytest.raises(raises, match=with_message):
+                await api_client.subscribe(None)
+        else:
+            with pytest.raises(raises):
+                await api_client.subscribe(None)
 
     assert api_client.subscription_status == SubscriptionStatus.ERROR
 
