@@ -11,7 +11,23 @@
 $ pip install pytraccar
 ```
 
+
+## Usage
+
 Look at the file `example.py` for a usage example.
+
+`ApiClient` can be initialized as follows:
+
+Required args:
+* `host`: string hostname
+* `token`: string, see [the API doc][api-doc] for details
+* `client_session`: `aiohttp.ClientSession`; see example.py
+
+Optional kwargs:
+* `port`: integer, default `8082`
+* `ssl`: boolean, default `False`
+* `verify_ssl`: boolean, default `True`
+* `ws_heartbeat`: integer, default `120`
 
 
 ## Contribute
@@ -26,3 +42,5 @@ Look at the file `example.py` for a usage example.
 6. Ensure all tests passes and coverage is still at 100% with `poetry run pytest --cov`
 7. Commit your work, and push it to GitHub
 8. Create a PR against the `main` branch
+
+[api-doc]: https://www.traccar.org/traccar-api/
