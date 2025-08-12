@@ -37,7 +37,37 @@ _LOGGER: Logger = getLogger(__package__)
 
 
 class ApiClient:
-    """Class for interacting with the Traccar API."""
+    """Class for interacting with the Traccar API.
+
+    :param host: Traccar server hostname or IP (without scheme). Used to build
+        the base URL.
+    :type host: str
+    :param token: Traccar API access token. Sent as ``Authorization: Bearer
+        <token>`` with every request.
+    :type token: str
+    :param client_session: Existing ``aiohttp`` session used for HTTP and
+        WebSocket communication. This client does not manage the session
+        lifecycle.
+    :type client_session: aiohttp.ClientSession
+    :param port: Port for the Traccar API. Defaults to ``8082`` if not
+        provided.
+    :type port: int | None
+    :param ssl: Use HTTPS when ``True``; HTTP when ``False``. Defaults to
+        ``False``.
+    :type ssl: bool
+    :param verify_ssl: Verify TLS certificates for HTTPS/WebSocket
+        connections. Relevant when ``ssl`` is ``True``. Defaults to ``True``.
+    :type verify_ssl: bool
+    :param ws_heartbeat: Heartbeat interval (seconds) for the WebSocket used by
+        :meth:`subscribe` method. Defaults to ``120``.
+    :type ws_heartbeat: int
+
+    Note:
+        Base URL: ``http[s]://{host}:{port or 8082}/api``.
+        Extra keyword arguments are accepted but ignored for forward
+        compatibility.
+
+    """
 
     def __init__(
         self,
@@ -110,22 +140,54 @@ class ApiClient:
             raise TraccarException(f"Unexpected error - {exception}") from exception
 
     async def get_server(self) -> ServerModel:
-        """Get server information."""
+        """Get server information.
+
+        :return: Server information from Traccar.
+        :rtype: ServerModel
+        :raises TraccarAuthenticationException: If authentication fails (401).
+        :raises TraccarResponseException: For non-200 HTTP responses.
+        :raises TraccarConnectionException: On connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors.
+        """
         response: ServerModel = await self._call_api("server")
         return response
 
     async def get_devices(self) -> list[DeviceModel]:
-        """Get all devices from the Traccar API."""
+        """Get all devices from the Traccar API.
+
+        :return: A list of devices.
+        :rtype: list[DeviceModel]
+        :raises TraccarAuthenticationException: If authentication fails (401).
+        :raises TraccarResponseException: For non-200 HTTP responses.
+        :raises TraccarConnectionException: On connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors.
+        """
         response: list[DeviceModel] = await self._call_api("devices")
         return response
 
     async def get_geofences(self) -> list[GeofenceModel]:
-        """Get all geofences from the Traccar API."""
+        """Get all geofences from the Traccar API.
+
+        :return: A list of geofences.
+        :rtype: list[GeofenceModel]
+        :raises TraccarAuthenticationException: If authentication fails (401).
+        :raises TraccarResponseException: For non-200 HTTP responses.
+        :raises TraccarConnectionException: On connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors.
+        """
         response: list[GeofenceModel] = await self._call_api("geofences")
         return response
 
     async def get_positions(self) -> list[PositionModel]:
-        """Get all positions from the Traccar API."""
+        """Get all positions from the Traccar API.
+
+        :return: A list of positions.
+        :rtype: list[PositionModel]
+        :raises TraccarAuthenticationException: If authentication fails (401).
+        :raises TraccarResponseException: For non-200 HTTP responses.
+        :raises TraccarConnectionException: On connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors.
+        """
         response: list[PositionModel] = await self._call_api("positions")
         return response
 
@@ -139,7 +201,25 @@ class ApiClient:
         end_time: datetime | None = None,
         **_: Any,
     ) -> list[ReportsEventeModel]:
-        """Get events."""
+        """Get events.
+
+        :param devices: Device IDs to filter by.
+        :type devices: list[int] | None
+        :param groups: Group IDs to filter by.
+        :type groups: list[int] | None
+        :param event_types: Event type names to filter by.
+        :type event_types: list[str] | None
+        :param start_time: Start time inclusive. If naive, treated as UTC.
+        :type start_time: datetime | None
+        :param end_time: End time inclusive. If naive, treated as UTC.
+        :type end_time: datetime | None
+        :return: A list of events matching the filters.
+        :rtype: list[ReportsEventeModel]
+        :raises TraccarAuthenticationException: If authentication fails (401).
+        :raises TraccarResponseException: For non-200 HTTP responses.
+        :raises TraccarConnectionException: On connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors.
+        """
         datetime_now = datetime.now(tz=UTC).replace(tzinfo=None)
         start_time = start_time or datetime_now
         end_time = end_time or datetime_now - timedelta(hours=30)
@@ -158,7 +238,16 @@ class ApiClient:
     async def subscribe(
         self, callback: Callable[[SubscriptionData], Awaitable[None]]
     ) -> None:
-        """Subscribe to events."""
+        """Subscribe to events via WebSocket and invoke the callback for each message.
+
+        :param callback: Coroutine called with incoming payloads. The payload is a
+            mapping with optional keys ``devices``, ``events``, and ``positions``.
+        :type callback: Callable[[SubscriptionData], Awaitable[None]]
+        :raises TraccarConnectionException: When the WebSocket closes/errors or on
+            connectivity/timeouts/client errors.
+        :raises TraccarException: For unexpected errors, including a failed session
+            setup prior to opening the WebSocket.
+        """
 
         async def _subscriber() -> None:
             self._subscription_status = SubscriptionStatus.CONNECTING
