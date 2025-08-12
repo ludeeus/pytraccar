@@ -8,7 +8,7 @@
 ## Installation
 
 ```bash
-$ pip install pytraccar
+python3 -m pip install pytraccar
 ```
 
 Look at the file `example.py` for a usage example.
