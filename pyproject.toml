@@ -42,7 +42,7 @@ pytest = "8.4.2"
 pytest-asyncio = "1.1.0"
 pytest-cov = "7.0.0"
 ruff = "0.12.12"
-safety = "3.6.0"
+safety = "3.6.1"
 
 [tool.coverage.run]
 source = ["pytraccar"]
