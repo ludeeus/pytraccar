@@ -41,7 +41,7 @@ pre-commit-hooks = "6.0.0"
 pytest = "8.4.2"
 pytest-asyncio = "1.1.0"
 pytest-cov = "7.0.0"
-ruff = "0.12.12"
+ruff = "0.13.0"
 safety = "3.6.1"
 
 [tool.coverage.run]
