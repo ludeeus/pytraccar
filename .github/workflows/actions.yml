@@ -1,5 +1,7 @@
 name: Actions
 
+permissions: {}
+
 on:
   pull_request:
     branches:
