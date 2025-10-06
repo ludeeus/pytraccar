@@ -1,7 +1,6 @@
 name: Actions
 
-permissions:
-  contents: read
+permissions: {}
 
 on:
   pull_request:
