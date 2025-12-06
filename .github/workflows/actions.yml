@@ -18,10 +18,10 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v6.0.1
 
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v6.1.0
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Install poetry
         run: pipx install poetry
@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.13"
+          - "3.14"
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v6.0.1
@@ -73,10 +73,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v6.1.0
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Install poetry
         run: pipx install poetry
