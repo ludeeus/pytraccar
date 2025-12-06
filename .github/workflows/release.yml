@@ -11,10 +11,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.14"
 
@@ -28,7 +28,7 @@ jobs:
         run: poetry build
 
       - name: Upload dists
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: "dist"
           path: "dist/"
@@ -47,7 +47,7 @@ jobs:
       id-token: write
     steps:
       - name: Download dists
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v6.0.0
         with:
           name: "dist"
           path: "dist/"
@@ -61,6 +61,6 @@ jobs:
           subject-path: dist/*
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@aec2ec56f94eb8180ceec724245f64ef008b89f5 # v2.4.0
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
         with:
           files: dist/*
