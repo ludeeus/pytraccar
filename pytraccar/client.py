@@ -130,7 +130,7 @@ class ApiClient:
             raise
         except TimeoutError as exception:
             raise TraccarConnectionException(
-                "Timeouterror connecting to Traccar"
+                "Timeout error connecting to Traccar"
             ) from exception
         except (aiohttp.ClientError, asyncio.CancelledError) as exception:
             raise TraccarConnectionException(
