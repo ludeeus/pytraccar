@@ -6,7 +6,9 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive plan to upgrade pytraccar to Python 3.14 as the minimum supported version. The upgrade will involve configuration updates, removal of deprecated/legacy patterns, and refactoring to leverage new Python 3.14 features.
+This document outlines the plan to upgrade pytraccar to Python 3.14 as the minimum supported version. The upgrade primarily involves configuration updates, dependency verification, code quality improvements, and comprehensive testing to ensure compatibility with Python 3.14.
+
+**Note:** This is a conservative upgrade focused on version bumps and compatibility verification. The codebase already uses modern Python patterns and does not require significant refactoring.
 
 ---
 
@@ -51,31 +53,9 @@ This document outlines the comprehensive plan to upgrade pytraccar to Python 3.1
 
 ---
 
-## Phase 2: Remove Deprecated/Legacy Patterns
+## Phase 2: Verify Python 3.14 Compatibility
 
-### 2.1 Remove `from __future__ import annotations`
-**Files (10 files total):**
-- `pytraccar/client.py` (line 3)
-- `pytraccar/models/device.py` (line 3)
-- `pytraccar/models/geofence.py` (estimated)
-- `pytraccar/models/position.py` (estimated)
-- `pytraccar/models/reports_event.py` (estimated)
-- `pytraccar/models/server.py` (estimated)
-- `pytraccar/models/subscription.py` (line 3)
-- `tests/common.py` (estimated)
-- `tests/conftest.py` (estimated)
-- `tests/test_subscription.py` (estimated)
-
-**Changes Required:**
-- Remove the `from __future__ import annotations` import statement from all files
-
-**Rationale:**
-- PEP 749 in Python 3.14 introduces deferred evaluation of annotations by default
-- This import statement is no longer necessary and becomes redundant
-- Annotations are now stored in special-purpose annotate functions
-- Removing this simplifies the codebase and aligns with Python 3.14's native behavior
-
-### 2.2 Review Exception Handling Syntax
+### 2.1 Review Exception Handling Syntax
 **Files:** All Python files with multiple exception types
 
 **Changes Required:**
@@ -92,26 +72,9 @@ This document outlines the comprehensive plan to upgrade pytraccar to Python 3.1
 
 ---
 
-## Phase 3: Leverage Python 3.14 Features
+## Phase 3: Review Python 3.14 Features (Information Only)
 
-### 3.1 Consider Template String Literals (Exploratory)
-**Files:** `pytraccar/client.py`, test files
-
-**Opportunity Areas:**
-- URL construction in `__init__` (line 85): `f"http{'s' if ssl else ''}://{host}:{port or 8082}/api"`
-- URL building in `_call_api` (line 111): `f"{self._base_url}/{endpoint}"`
-- Error messages and logging
-
-**Changes Required:**
-- Evaluate if template string literals provide cleaner syntax
-- Template strings are a new Python 3.14 feature for more flexible string interpolation
-- Consider adopting where it improves readability
-
-**Rationale:** Template string literals can provide cleaner, more maintainable string formatting in some contexts.
-
-**Note:** This is exploratory - evaluate if the benefit outweighs the change after Python 3.14 syntax is finalized.
-
-### 3.2 Review pathlib Usage
+### 3.1 Review pathlib Usage
 **Files:** Entire codebase
 
 **Current Status:**
@@ -124,7 +87,7 @@ This document outlines the comprehensive plan to upgrade pytraccar to Python 3.1
 
 **Rationale:** Python 3.14 adds recursive copying and moving to pathlib, but this library doesn't perform filesystem operations.
 
-### 3.3 Compression Module Reorganization (Future Consideration)
+### 3.2 Compression Module Reorganization (Future Consideration)
 **Current Status:**
 - The project does not use any compression modules (zlib, gzip, bz2, lzma, or zstd)
 
@@ -134,7 +97,7 @@ This document outlines the comprehensive plan to upgrade pytraccar to Python 3.1
 
 **Rationale:** Python 3.14 reorganizes compression modules under `compression.*` namespace, but this doesn't affect the current codebase.
 
-### 3.4 asyncio Changes Verification
+### 3.3 asyncio Changes Verification
 **Files:** `pytraccar/client.py`
 
 **Critical Change:** `asyncio.get_event_loop()` now raises RuntimeError if no event loop exists
@@ -322,9 +285,9 @@ async with aiohttp.ClientSession(
   - See PYTHON_3.14_UPGRADE_PLAN.md for technical details
 
 ### Improvements
-- Removed legacy `from __future__ import annotations` imports (now redundant)
-- Updated to leverage Python 3.14's native deferred annotation evaluation
-- Improved type hints using Python 3.14 capabilities
+- Verified compatibility with Python 3.14
+- Updated dependencies to Python 3.14-compatible versions
+- Enhanced type hints for better type safety
 ```
 
 ---
@@ -333,10 +296,10 @@ async with aiohttp.ClientSession(
 
 The phases should be executed in the following order:
 
-1. **Phase 2** - Remove deprecated patterns (preparation)
-2. **Phase 1** - Update configuration and metadata
-3. **Phase 4** - Code quality improvements
-4. **Phase 3** - Leverage new features (where beneficial)
+1. **Phase 1** - Update configuration and metadata
+2. **Phase 2** - Verify Python 3.14 compatibility (review only)
+3. **Phase 3** - Review new features (information only, no changes required)
+4. **Phase 4** - Code quality improvements (optional enhancements)
 5. **Phase 5** - Testing and validation
 6. **Phase 6** - Documentation updates
 
@@ -346,15 +309,15 @@ The phases should be executed in the following order:
 
 ### Low Risk
 - Configuration updates (Phase 1)
-- Removing `from __future__ import annotations` (Phase 2.1)
 - Documentation updates (Phase 6)
+- Code quality improvements (Phase 4) - optional enhancements
 
 ### Medium Risk
 - Dependency updates - some dependencies may not support Python 3.14 yet
-- Test suite changes - may reveal unexpected compatibility issues
+- Test suite validation - may reveal unexpected compatibility issues
 
 ### High Risk
-- None identified - the project already uses modern Python patterns
+- None identified - the project already uses modern Python patterns and no breaking code changes are planned
 
 ---
 
@@ -366,14 +329,16 @@ The phases should be executed in the following order:
 - CI/CD infrastructure must support Python 3.14
 
 **Estimated Effort:**
-- Phase 1: 1-2 hours
-- Phase 2: 1 hour
-- Phase 3: 2-3 hours (evaluation and selective adoption)
-- Phase 4: 2-3 hours
-- Phase 5: 2-4 hours (depending on issues found)
-- Phase 6: 1-2 hours
+- Phase 1: 1-2 hours (configuration updates and dependency verification)
+- Phase 2: 30 minutes (compatibility review - no changes expected)
+- Phase 3: 15 minutes (information only - documentation review)
+- Phase 4: 2-3 hours (optional code quality improvements)
+- Phase 5: 2-4 hours (testing and validation)
+- Phase 6: 1-2 hours (documentation updates)
 
-**Total Estimated Effort:** 9-15 hours
+**Total Estimated Effort:** 7-12 hours
+
+**Note:** The majority of effort is in testing/validation (Phase 5) and optional code quality improvements (Phase 4). The core upgrade (Phases 1-3, 6) is estimated at 3-5 hours.
 
 ---
 
@@ -411,10 +376,10 @@ After deployment:
 
 1. Monitor PyPI download statistics for Python version distribution
 2. Watch for bug reports related to Python 3.14 compatibility
-3. Track performance improvements from Python 3.14 optimizations:
-   - Incremental garbage collection
-   - Improved free-threaded mode (if applicable)
-   - Deferred annotation evaluation performance gains
+3. Track potential performance improvements from Python 3.14 optimizations:
+   - Incremental garbage collection (automatic benefit)
+   - Improved free-threaded mode (if applicable to workload)
+   - General runtime improvements
 
 ---
 
@@ -431,39 +396,31 @@ After deployment:
 ## Questions & Considerations
 
 1. **Dependency Compatibility:** Have all dependencies (especially aiohttp) released Python 3.14-compatible versions?
-2. **Breaking Changes:** Are there any user-facing API changes required?
+2. **Breaking Changes:** Are there any user-facing API changes required? (Expected: None)
 3. **Performance Testing:** Should we benchmark before/after to quantify improvements?
-4. **Type Checking:** Will removal of `from __future__ import annotations` affect type checking behavior?
-5. **Template Strings:** Are template string literals stable enough for production use?
+4. **User Impact:** What percentage of current users are on Python 3.13 vs earlier versions?
+5. **Support Timeline:** How long should we maintain Python 3.13 support in a separate branch?
 
 ---
 
 ## Appendix A: Files Requiring Changes
 
-### Configuration Files
-- `pyproject.toml`
-- `.github/workflows/actions.yml`
-- `README.md`
+### Configuration Files (Required)
+- `pyproject.toml` - Update Python version constraints
+- `.github/workflows/actions.yml` - Update CI/CD Python version
+- `README.md` - Update version badge
 
-### Python Source Files (Remove future imports)
-- `pytraccar/client.py`
-- `pytraccar/models/device.py`
-- `pytraccar/models/geofence.py`
-- `pytraccar/models/position.py`
-- `pytraccar/models/reports_event.py`
-- `pytraccar/models/server.py`
-- `pytraccar/models/subscription.py`
-- `tests/common.py`
-- `tests/conftest.py`
-- `tests/test_subscription.py`
+### Documentation Files (Required)
+- `README.md` - Update contribution guidelines if needed
+- `example.py` - Verify compatibility (no changes expected)
+- Changelog - Document version requirement change
 
-### Test Files
-- All files in `tests/` directory
+### Python Source Files (Optional - Code Quality Improvements)
+- `pytraccar/models/*.py` - Consider TypedDict enhancements
+- All source files - Review and enhance type hints as needed
 
-### Documentation Files
-- `README.md`
-- `example.py`
-- Changelog (if exists or create)
+### Test Files (Validation)
+- All files in `tests/` directory - Verify tests pass on Python 3.14
 
 ---
 
@@ -494,17 +451,18 @@ Dependencies to verify for Python 3.14 compatibility:
 ## Appendix C: Python 3.14 Features Summary
 
 **Features Applicable to This Project:**
-1. ✅ Deferred annotation evaluation (PEP 749) - Removes need for `from __future__ import annotations`
-2. ✅ Improved asyncio behavior - Already compliant
-3. ❓ Template string literals - Evaluate for adoption
-4. ❌ pathlib enhancements - Not applicable (no filesystem operations)
-5. ❌ Compression module reorganization - Not applicable (no compression used)
-6. ❌ Subinterpreters - Not applicable
-7. ✅ Performance improvements - Benefit automatically (GC, free-threading)
+1. ✅ Deferred annotation evaluation (PEP 749) - Already using `from __future__ import annotations` which remains compatible
+2. ✅ Improved asyncio behavior - Already compliant, not using deprecated patterns
+3. ✅ Performance improvements - Automatic benefits (incremental GC, runtime optimizations)
+4. ❌ Template string literals - Not adopting at this time
+5. ❌ pathlib enhancements - Not applicable (no filesystem operations)
+6. ❌ Compression module reorganization - Not applicable (no compression used)
+7. ❌ Subinterpreters - Not applicable to this library's use case
 
-**Breaking Changes to Consider:**
-1. ✅ `asyncio.get_event_loop()` behavior change - Not used in this project
-2. ✅ Exception syntax changes - Optional, keeping current syntax
+**Breaking Changes Verified:**
+1. ✅ `asyncio.get_event_loop()` behavior change - Not used in this project (compliant)
+2. ✅ Exception syntax changes - Optional enhancement, keeping current syntax for clarity
+3. ✅ No other breaking changes affect this codebase
 
 ---
 
