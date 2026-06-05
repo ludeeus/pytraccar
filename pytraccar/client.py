@@ -288,6 +288,13 @@ class ApiClient:
                         )
                     else:
                         _LOGGER.warning("Unexpected message type %s", msg.type.name)
+                # The async iterator exits without raising when the WebSocket
+                # closes silently (e.g. the server restarts without sending a
+                # CLOSE frame). Surface this as a connection exception so the
+                # caller can react and reconnect.
+                raise TraccarConnectionException(
+                    "WebSocket connection closed unexpectedly"
+                )
 
         try:
             # https://www.traccar.org/api-reference/#tag/Session/paths/~1session/post

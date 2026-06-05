@@ -69,7 +69,11 @@ async def test_subscription_text_message(
     async def _handler(data: Any) -> None:
         _handled.append(data)
 
-    await api_client.subscribe(_handler)
+    with pytest.raises(
+        TraccarConnectionException,
+        match="WebSocket connection closed unexpectedly",
+    ):
+        await api_client.subscribe(_handler)
     assert _handled == _expected_handled
 
 
@@ -128,7 +132,11 @@ async def test_subscription_unknown_type(
 
     assert f"Unexpected message type {message.type.name}" not in caplog.text
 
-    await api_client.subscribe(_handler)
+    with pytest.raises(
+        TraccarConnectionException,
+        match="WebSocket connection closed unexpectedly",
+    ):
+        await api_client.subscribe(_handler)
 
     assert len(_handled) == 0
     assert f"Unexpected message type {message.type.name}" in caplog.text
@@ -146,9 +154,39 @@ async def test_subscription_bad_handler(
     async def _handler(_: Any) -> NoReturn:
         raise ValueError("Bad handler")
 
-    await api_client.subscribe(_handler)
+    with pytest.raises(
+        TraccarConnectionException,
+        match="WebSocket connection closed unexpectedly",
+    ):
+        await api_client.subscribe(_handler)
 
     assert "Exception while handling message: ValueError(Bad handler)" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_subscription_silent_close(
+    api_client: ApiClient,
+    mock_ws_messages: WSMessageHandler,
+) -> None:
+    """Test that a silent WebSocket close raises TraccarConnectionException.
+
+    When the server closes the connection without sending a CLOSE frame
+    (e.g. during a restart), aiohttp's async iterator exits without raising.
+    The client must still surface this as a connection exception.
+    """
+    assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
+    assert len(mock_ws_messages.messages) == 0
+
+    async def _handler(_: Any) -> None:
+        pass
+
+    with pytest.raises(
+        TraccarConnectionException,
+        match="WebSocket connection closed unexpectedly",
+    ):
+        await api_client.subscribe(_handler)
+
+    assert api_client.subscription_status == SubscriptionStatus.ERROR
 
 
 @pytest.mark.parametrize(
