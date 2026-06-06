@@ -264,6 +264,9 @@ async def test_subscription_unsubscribe_graceful(
     await asyncio.wait_for(started.wait(), timeout=1)
 
     subscribe_task.cancel()
-    await asyncio.wait_for(subscribe_task, timeout=1)
+    try:
+        await asyncio.wait_for(subscribe_task, timeout=1)
+    except asyncio.CancelledError:
+        pytest.fail("Cancellation should be handled gracefully by subscribe()")
 
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
