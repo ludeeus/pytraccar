@@ -252,12 +252,13 @@ async def test_subscription_unsubscribe_graceful(
     mock_ws_messages: WSMessageHandler,
 ) -> None:
     """Test cancellation-based unsubscription is handled gracefully."""
+    handler_block_seconds = 30
     started = asyncio.Event()
     mock_ws_messages.add(WSMessage(messagetype=WSMsgType.TEXT, json={"devices": []}))
 
-    async def _handler(_: Any) -> None:
+    async def _handler(_message: Any) -> None:
         started.set()
-        await asyncio.sleep(30)
+        await asyncio.sleep(handler_block_seconds)
 
     subscribe_task = asyncio.create_task(api_client.subscribe(_handler))
 
