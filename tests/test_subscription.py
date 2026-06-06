@@ -244,3 +244,26 @@ async def test_subscription_cancelation(api_client: ApiClient) -> None:
         await api_client.subscribe(None)
 
     assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
+
+
+@pytest.mark.asyncio
+async def test_subscription_unsubscribe_graceful(
+    api_client: ApiClient,
+    mock_ws_messages: WSMessageHandler,
+) -> None:
+    """Test cancellation-based unsubscription is handled gracefully."""
+    started = asyncio.Event()
+    mock_ws_messages.add(WSMessage(messagetype=WSMsgType.TEXT, json={"devices": []}))
+
+    async def _handler(_: Any) -> None:
+        started.set()
+        await asyncio.sleep(30)
+
+    subscribe_task = asyncio.create_task(api_client.subscribe(_handler))
+
+    await asyncio.wait_for(started.wait(), timeout=1)
+
+    subscribe_task.cancel()
+    await asyncio.wait_for(subscribe_task, timeout=1)
+
+    assert api_client.subscription_status == SubscriptionStatus.DISCONNECTED
