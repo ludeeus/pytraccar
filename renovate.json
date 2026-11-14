@@ -16,6 +16,16 @@
         "actions/upload-artifact"
       ],
       "groupName": "artifact actions"
+    },
+    {
+      "matchDatasources": ["pypi"],
+      "matchPackageNames": [
+        "coverage",
+        "pytest",
+        "pytest-asyncio",
+        "pytest-cov"
+      ],
+      "groupName": "pytest"
     }
   ]
 }
