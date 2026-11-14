@@ -7,5 +7,15 @@
   "labels": [
     "dependencies"
   ],
-  "prConcurrentLimit": 10
+  "prConcurrentLimit": 10,
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": [
+        "actions/download-artifact",
+        "actions/upload-artifact"
+      ],
+      "groupName": "artifact actions"
+    }
+  ]
 }
